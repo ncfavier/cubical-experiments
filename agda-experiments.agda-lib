@@ -1,0 +1,7 @@
+name: agda-experiments
+include: .
+depend:
+    cubical
+flags:
+    --cubical
+    --no-import-sorts
