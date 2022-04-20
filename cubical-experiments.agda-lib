@@ -1,4 +1,4 @@
-name: agda-experiments
+name: cubical-experiments
 include: .
 depend:
     cubical
