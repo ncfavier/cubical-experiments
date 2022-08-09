@@ -11,7 +11,7 @@ data Interval : Type where
 
 Interval-isContr : isContr Interval
 Interval-isContr = l , paths where
-  paths : (x : Interval) -> l ≡ x
+  paths : (x : Interval) → l ≡ x
   paths l = refl
   paths r = seg
   paths (seg i) j = seg (i ∧ j)
@@ -39,7 +39,12 @@ S¹→⊤ (loop i) = tt
 
 always-loop : (x : S¹) → x ≡ x
 always-loop base = loop
-always-loop (loop i) = {! TODO needs hcomp !}
+always-loop (loop i) j =
+  hcomp (λ where k (i = i0) → loop (j ∨ ~ k)
+                 k (i = i1) → loop (j ∧ k)
+                 k (j = i0) → loop (i ∨ ~ k)
+                 k (j = i1) → loop (i ∧ k))
+        base
 
 -- ●
 data D² : Type where
@@ -49,14 +54,10 @@ data D² : Type where
 
 D²-isContr : isContr D²
 D²-isContr = base² , paths where
-  paths : (x : D²) -> base² ≡ x
+  paths : (x : D²) → base² ≡ x
   paths base² = refl
   paths (loop² i) j = disk j i
   paths (disk i j) k = disk (i ∧ k) j
 
 D²-isProp : isProp D²
-D²-isProp base² = D²-isContr .snd
-D²-isProp (loop² i) base² j = disk (~ j) i
-D²-isProp (loop² i) (loop² j) = {! TODO needs hcomp !}
-D²-isProp (loop² i) (disk j k) = {! TODO !}
-D²-isProp (disk i j) y = {! TODO !}
+D²-isProp x y = sym (D²-isContr .snd x) ∙ D²-isContr .snd y
