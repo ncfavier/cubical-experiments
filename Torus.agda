@@ -1,7 +1,9 @@
 module Torus where
+
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Isomorphism
-open import Cubical.Foundations.Path
+open import Cubical.Foundations.Equiv
+open import Cubical.Foundations.GroupoidLaws
 open import Cubical.HITs.Torus
 
 private
@@ -9,31 +11,47 @@ private
     ℓ : Level
     A : Type ℓ
 
+-- 🍩
 data T² : Type where
   base : T²
   p q : base ≡ base
   surf : p ∙ q ≡ q ∙ p
 
-T²≃Torus : Iso T² Torus
-T²≃Torus = iso to from {!   !} {!   !}
+hcomp-inv : {φ : I} (u : I → Partial φ A) (u0 : A [ φ ↦ u i1 ])
+          → hcomp u (hcomp (λ k → u (~ k)) (outS u0)) ≡ outS u0
+hcomp-inv u u0 i = hcomp-equivFiller (λ k → u (~ k)) u0 (~ i)
+
+T²≃Torus : T² ≃ Torus
+T²≃Torus = isoToEquiv (iso to from to-from from-to)
   where
+    sides : {a : A} (p1 p2 : a ≡ a) (i j k : I) → Partial (i ∨ ~ i ∨ j ∨ ~ j) A
+    sides p1 p2 i j k (i = i0) = compPath-filler p2 p1 (~ k) j
+    sides p1 p2 i j k (i = i1) = compPath-filler' p1 p2 (~ k) j
+    sides p1 p2 i j k (j = i0) = p1 (i ∧ k)
+    sides p1 p2 i j k (j = i1) = p1 (i ∨ ~ k)
+
     to : T² → Torus
     to base = point
     to (p i) = line1 i
     to (q j) = line2 j
-    to (surf i j) = surf' i j
-      where
-        surf' = cong (line1 ∙_) (sym (PathP→compPathL square)) ∙ compPathl-cancel _ _
+    to (surf i j) = hcomp (λ k → sides line1 line2 (~ i) j (~ k)) (square (~ i) j)
 
     from : Torus → T²
     from point = base
     from (line1 i) = p i
     from (line2 j) = q j
-    from (square i j) = {! !}
-      where
-        foo : Square (refl ∙ refl) (q ∙ refl) p (q ∙ p)
-        foo = flipSquare (compPath-filler p q) ∙₂ flipSquare surf
-        bar : Square refl (sym q) (sym p) (sym p ∙ sym q)
-        bar = flipSquare (compPath-filler (sym p) (sym q))
-        -- square' : Square (refl ∙ q) (q ∙ refl) p p
-        square' = compPathP foo (λ i j → compPath-filler (sym p) (sym q) (~ i) (~ j))
+    from (square i j) = hcomp (sides p q i j) (surf (~ i) j)
+
+    to-from : ∀ x → to (from x) ≡ x
+    to-from point = refl
+    to-from (line1 i) = refl
+    to-from (line2 i) = refl
+    to-from (square i j) = hcomp-inv (sides line1 line2 i j) (inS (square i j))
+
+    from-to : ∀ x → from (to x) ≡ x
+    from-to base = refl
+    from-to (p i) = refl
+    from-to (q i) = refl
+    from-to (surf i j) = {! hcomp-inv (λ k → sides p q (~ i) j (~ k)) (inS (surf i j)) !}
+      -- (i ∨ ~ i) ∨ ~ i₁ ∨ i₁ != i ∨ ~ i of type I
+      -- when checking the definition of from-to
