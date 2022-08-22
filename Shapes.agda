@@ -1,5 +1,6 @@
-open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude
+open import Cubical.Foundations.Path
+open import Cubical.Foundations.Isomorphism
 open import Cubical.Data.Unit renaming (Unit to ⊤)
 open import Cubical.Relation.Nullary
 
@@ -45,6 +46,24 @@ always-loop (loop i) j =
                  k (j = i0) → loop (i ∨ ~ k)
                  k (j = i1) → loop (i ∧ k))
         base
+
+loop-induction : {ℓ : Level} {P : base ≡ base → Type ℓ}
+               → (pprop : ∀ p → isProp (P p))
+               → (prefl : P refl)
+               → (ploop : ∀ p → P p → P (p ∙ loop))
+               → (ppool : ∀ p → P p → P (p ∙ sym loop))
+               → (p : base ≡ base) → P p
+loop-induction {ℓ} {P} pprop prefl ploop ppool = J Q prefl
+  where
+    bridge : PathP (λ i → base ≡ loop i → Type ℓ) P P
+    bridge = toPathP (funExt λ p → isoToPath
+      (iso (λ x → subst P (compPathr-cancel _ _) (ploop _ x))
+           (ppool p)
+           (λ _ → pprop _ _ _)
+           (λ _ → pprop _ _ _)))
+    Q : (x : S¹) → base ≡ x → Type ℓ
+    Q base p = P p
+    Q (loop i) p = bridge i p
 
 -- ●
 data D² : Type where
