@@ -53,5 +53,4 @@ T²≃Torus = isoToEquiv (iso to from to-from from-to)
     from-to (p i) = refl
     from-to (q i) = refl
     from-to (surf i j) = {! hcomp-inv (λ k → sides p q (~ i) j (~ k)) (inS (surf i j)) !}
-      -- (i ∨ ~ i) ∨ ~ i₁ ∨ i₁ != i ∨ ~ i of type I
-      -- when checking the definition of from-to
+      -- see https://github.com/agda/cubical/pull/912 for the full proof
