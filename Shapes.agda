@@ -1,7 +1,9 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Path
 open import Cubical.Foundations.Isomorphism
+open import Cubical.Foundations.Univalence
 open import Cubical.Data.Unit renaming (Unit to ⊤)
+open import Cubical.Data.Int
 open import Cubical.Relation.Nullary
 
 -- —
@@ -64,6 +66,50 @@ loop-induction {ℓ} {P} pprop prefl ploop ppool = J Q prefl
     Q : (x : S¹) → base ≡ x → Type ℓ
     Q base p = P p
     Q (loop i) p = bridge i p
+
+data Bool₁ : Type₁ where
+  false true : Bool₁
+
+S¹⋆ : Σ Type (λ A → A)
+S¹⋆ = S¹ , base
+
+flip : S¹ → S¹
+flip base = base
+flip (loop i) = loop (~ i)
+flip≡ : S¹ ≡ S¹
+flip≡ = isoToPath (iso flip flip inv inv) where
+  inv : section flip flip
+  inv base = refl
+  inv (loop i) = refl
+flip⋆ : S¹⋆ ≡ S¹⋆
+flip⋆ i = flip≡ i , base≡base i where
+  base≡base : PathP (λ i → flip≡ i) base base
+  base≡base = ua-gluePath _ refl
+
+Cover : S¹ → Type
+Cover base = ℤ
+Cover (loop i) = sucPathℤ i
+
+S¹⋆-aut : (S¹⋆ ≡ S¹⋆) ≡ Bool₁
+S¹⋆-aut = isoToPath (iso to from sec ret) where
+  isPos : ℤ → Bool₁
+  isPos (pos _) = true
+  isPos _ = false
+  to : S¹⋆ ≡ S¹⋆ → Bool₁
+  to p = isPos (transport (λ i → Cover (loop' i)) 0) where
+    loop' : base ≡ base
+    loop' i = comp (λ j → p j .fst)
+                   (λ where j (i = i0) → p j .snd
+                            j (i = i1) → p j .snd)
+                   (loop i)
+  from : Bool₁ → S¹⋆ ≡ S¹⋆
+  from false = flip⋆
+  from true = refl
+  sec : section to from
+  sec false = refl
+  sec true = refl
+  ret : retract to from
+  ret p = {!   !}
 
 -- ●
 data D² : Type where
