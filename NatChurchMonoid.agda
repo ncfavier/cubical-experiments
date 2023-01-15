@@ -41,12 +41,8 @@ MEndoNatural = Σ MEndo isNatural
   on1-mtimes zero = refl
   on1-mtimes (suc n) = cong suc (on1-mtimes n)
 
-  mtimes-on1-n : (me : MEndoNatural) {n : ℕ} → on1 me ≡ n → me ≡ mtimes n
-  mtimes-on1-n me {n} h = Σ≡Prop isPropIsNatural (λ i m x → p m x i) where
-    p : (m : Monoid ℓ-zero) (x : ⟨ m ⟩) → me .fst m x ≡ mtimes n .fst m x
-    p m x = cong (me .fst m) (sym (m .snd .MonoidStr.isMonoid .IsMonoid.·IdR _)) ∙ funExt⁻ (me .snd f) 1 ∙ cong (f .fst) h where
-      f = mtimes-hom m x
-
   mtimes-on1 : (me : MEndoNatural) → mtimes (on1 me) ≡ me
-  mtimes-on1 me with on1 me | mtimes-on1-n me
-  ...              | _      | h = sym (h refl)
+  mtimes-on1 me = Σ≡Prop isPropIsNatural (λ i m x → p m x i) where
+    p : (m : Monoid ℓ-zero) (x : ⟨ m ⟩) → mtimes (on1 me) .fst m x ≡ me .fst m x
+    p m x = sym (funExt⁻ (me .snd (mtimes-hom m x)) 1)
+          ∙ cong (me .fst m) (m .snd .MonoidStr.isMonoid .IsMonoid.·IdR _)
