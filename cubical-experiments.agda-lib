@@ -1,5 +1,5 @@
 name: cubical-experiments
-include: .
+include: src
 depend:
     cubical
     1lab

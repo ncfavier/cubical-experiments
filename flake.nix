@@ -16,9 +16,9 @@
       LC_ALL = "C.UTF-8";
       buildPhase =  ''
         shopt -s extglob
-        for f in *.agda *.lagda*; do
+        for f in src/*.agda src/*.lagda*; do
           agda --html --html-dir="$out" --html-highlight=all --css=style.css --highlight-occurrences "$f"
-          mod=''${f%%.@(agda|lagda*)}
+          mod=''${f%%.@(agda|lagda*)} mod=''${mod##*/}
           cat >> mods << EOF
           <a class="Keyword">import</a> <a href="$mod.html" class="Module">$mod</a>
         EOF

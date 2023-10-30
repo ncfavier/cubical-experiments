@@ -1,8 +1,9 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Path
-open import Cubical.Foundations.Isomorphism
+open import Cubical.Foundations.Isomorphism renaming (Iso to _≃_)
 open import Cubical.Foundations.Univalence
 open import Cubical.Data.Unit renaming (Unit to ⊤)
+open import Cubical.Data.Sigma
 open import Cubical.Data.Int
 open import Cubical.Relation.Nullary
 
@@ -90,8 +91,8 @@ Cover : S¹ → Type
 Cover base = ℤ
 Cover (loop i) = sucPathℤ i
 
-S¹⋆-aut : (S¹⋆ ≡ S¹⋆) ≡ Bool₁
-S¹⋆-aut = isoToPath (iso to from sec ret) where
+S¹⋆-auto : (S¹⋆ ≡ S¹⋆) ≡ Bool₁
+S¹⋆-auto = isoToPath (iso to from sec ret) where
   isPos : ℤ → Bool₁
   isPos (pos _) = true
   isPos _ = false
@@ -126,3 +127,22 @@ D²-isContr = base² , paths where
 
 D²-isProp : isProp D²
 D²-isProp x y = sym (D²-isContr .snd x) ∙ D²-isContr .snd y
+
+data coeq (X : Type) : Type where
+  inc : X → coeq X
+  eq : ∀ x → inc x ≡ inc x
+
+lemma : ∀ X → coeq X ≃ (X × S¹)
+lemma X = iso to from to-from from-to where
+  to : coeq X → X × S¹
+  to (inc x) = x , base
+  to (eq x i) = x , loop i
+  from : X × S¹ → coeq X
+  from (x , base) = inc x
+  from (x , loop i) = eq x i
+  to-from : ∀ x → to (from x) ≡ x
+  to-from (_ , base) = refl
+  to-from (_ , loop i) = refl
+  from-to : ∀ x → from (to x) ≡ x
+  from-to (inc x) = refl
+  from-to (eq x i) = refl
