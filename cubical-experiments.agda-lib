@@ -11,3 +11,4 @@ flags:
     --allow-unsolved-metas
     --rewriting
     --guardedness
+    -WnoInteractionMetaBoundaries

@@ -1,10 +1,15 @@
 :root {
   --background: #080709;
   --foreground: #e0ceed;
-  --comment: #535353;
-  --constant: #953eff;
+  --comment: #999;
+  --constant: #9463ff;
   --literal: #df00ff;
   --keyword: #8e6da6;
+}
+
+::selection {
+  background-color: var(--foreground);
+  color: var(--background);
 }
 
 body {
