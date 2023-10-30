@@ -1,0 +1,63 @@
+:root {
+  --background: #080709;
+  --foreground: #e0ceed;
+  --comment: #535353;
+  --constant: #953eff;
+  --literal: #df00ff;
+  --keyword: #8e6da6;
+}
+
+body {
+  margin: 2em;
+  font-family: sans-serif;
+  font-size: 1.2em;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Aspects. */
+.Agda .Comment       { color: var(--comment) }
+.Agda .Background    { }
+.Agda .Markup        { }
+.Agda .Keyword       { color: var(--keyword) }
+.Agda .String        { color: var(--literal) }
+.Agda .Number        { color: var(--literal) }
+.Agda .Symbol        { color: var(--foreground) }
+.Agda .PrimitiveType { color: var(--constant) }
+.Agda .Pragma        { color: var(--foreground)   }
+.Agda .Operator      {}
+.Agda .Hole          { background: #076969 }
+
+/* NameKinds. */
+.Agda .Bound                  { color: var(--foreground)   }
+.Agda .Generalizable          { color: var(--foreground)   }
+.Agda .InductiveConstructor   { color: var(--literal) }
+.Agda .CoinductiveConstructor { color: var(--literal) }
+.Agda .Datatype               { color: var(--constant) }
+.Agda .Field                  { color: var(--constant) }
+.Agda .Function               { color: var(--constant) }
+.Agda .Module                 { color: var(--literal) }
+.Agda .Postulate              { color: var(--constant) }
+.Agda .Primitive              { color: var(--constant) }
+.Agda .Record                 { color: var(--constant) }
+
+/* OtherAspects. */
+.Agda .DottedPattern        {}
+.Agda .UnsolvedMeta         { color: var(--foreground); background: yellow         }
+.Agda .UnsolvedConstraint   { color: var(--foreground); background: yellow         }
+.Agda .TerminationProblem   { color: var(--foreground); background: #FFA07A        }
+.Agda .IncompletePattern    { color: var(--foreground); background: #F5DEB3        }
+.Agda .Error                { color: red;   text-decoration: underline }
+.Agda .TypeChecks           { color: var(--foreground); background: #ADD8E6        }
+.Agda .Deadcode             { color: var(--foreground); background: #808080        }
+.Agda .ShadowingInTelescope { color: var(--foreground); background: #808080        }
+
+/* Standard attributes. */
+.Agda a { text-decoration: none }
+.Agda a[href]:hover { background-color: #444; }
+.Agda [href].hover-highlight { background-color: #444; }

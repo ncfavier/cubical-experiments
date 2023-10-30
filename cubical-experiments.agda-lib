@@ -2,6 +2,12 @@ name: cubical-experiments
 include: .
 depend:
     cubical
+    1lab
 flags:
     --cubical
+    --no-load-primitives
     --no-import-sorts
+    --postfix-projections
+    --allow-unsolved-metas
+    --rewriting
+    --guardedness
