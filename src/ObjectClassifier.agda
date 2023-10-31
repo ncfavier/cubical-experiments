@@ -92,4 +92,4 @@ lemma {ℓ} A = Iso→Equiv λ where
 
 -- Equivalences form an identity system, which is another way to state univalence.
 univalence : ∀ {ℓ} (A : Type ℓ) → is-contr (Σ (Type ℓ) λ B → A ≃ B)
-univalence {ℓ} A = is-hlevel≃ 0 (lemma A e⁻¹) (Type↓-is-classifier (! _))
+univalence {ℓ} A = is-hlevel≃ 0 (lemma A e⁻¹) (Type↓-is-classifier (! A))
