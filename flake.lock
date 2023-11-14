@@ -2,16 +2,16 @@
   "nodes": {
     "nixpkgs": {
       "locked": {
-        "lastModified": 1698697786,
-        "narHash": "sha256-48HMqeNtQbWkkbjWhsHT6/6sOS166dMrGIxGVxS31mk=",
+        "lastModified": 1699725108,
+        "narHash": "sha256-NTiPW4jRC+9puakU4Vi8WpFEirhp92kTOSThuZke+FA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "ca760999da667767183bfe8ba9c29d3764939461",
+        "rev": "911ad1e67f458b6bcf0278fa85e33bb9924fed7e",
         "type": "github"
       },
       "original": {
         "id": "nixpkgs",
-        "ref": "haskell-updates",
+        "ref": "nixpkgs-unstable",
         "type": "indirect"
       }
     },
