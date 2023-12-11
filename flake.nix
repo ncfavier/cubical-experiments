@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "nixpkgs/haskell-updates";
   };
 
   outputs = { self, nixpkgs, ... }: let

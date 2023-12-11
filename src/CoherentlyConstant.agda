@@ -1,4 +1,4 @@
-open import 1Lab.Prelude
+open import 1Lab.Prelude hiding (∥_∥³; ∥-∥³-elim-set; ∥-∥³-elim-prop; ∥-∥³-rec; ∥-∥³-is-prop; ∥-∥-rec-groupoid)
 open import 1Lab.Path.Reasoning
 
 module CoherentlyConstant where
