@@ -20,9 +20,13 @@ body {
   color: var(--foreground);
 }
 
-a {
+:any-link {
   text-decoration: none;
-  color: inherit;
+  color: var(--literal);
+}
+
+h1 a, h2 a, h3 a {
+  color: inherit !important;
 }
 
 /* Aspects. */

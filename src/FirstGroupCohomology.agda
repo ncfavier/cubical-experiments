@@ -1,23 +1,17 @@
-open import 1Lab.Prelude
 open import 1Lab.Path.Reasoning
-open import 1Lab.Reflection.Induction
-open import Algebra.Group
-open import Algebra.Group.Ab
-open import Algebra.Group.Homotopy
-open import Algebra.Group.Concrete
+open import 1Lab.Prelude
+
 open import Algebra.Group.Cat.Base
+open import Algebra.Group.Concrete
+open import Algebra.Group.Ab
+
 open import Cat.Prelude
-open import Homotopy.Connectedness
+
+open import Homotopy.Space.Delooping
 
 module FirstGroupCohomology where
 
 open Precategory
-
-unquoteDecl Deloop-elim-set = make-elim-n 2 Deloop-elim-set (quote Deloop)
-
-instance
-  H-Level-Deloop' : ∀ {ℓ} {G : Group ℓ} {n} → H-Level (Deloop G) (3 + n)
-  H-Level-Deloop' {G = G} = H-Level-Deloop G
 
 Deloop∙ : ∀ {ℓ} (G : Group ℓ) → Type∙ ℓ
 Deloop∙ G = Deloop G , base
@@ -28,16 +22,13 @@ DeloopC G = concrete-group (Deloop∙ G) Deloop-is-connected (hlevel 3)
 π₁BG≡G : ∀ {ℓ} (G : Group ℓ) → π₁B (DeloopC G) ≡ G
 π₁BG≡G G = π₁≡π₀₊₁ ∙ sym (G≡π₁B G)
 
-Group-is-abelian : ∀ {ℓ} → Group ℓ → Type _
-Group-is-abelian G = Group-on-is-abelian (G .snd)
-
 -- Any two loops commute in the delooping of an abelian group.
-ab→square : ∀ {ℓ} {H : Group ℓ} (H-ab : Group-is-abelian H)
+ab→square : ∀ {ℓ} {H : Group ℓ} (H-ab : is-commutative-group H)
           → {x : Deloop H} (p q : x ≡ x) → Square p q q p
 ab→square {H = H} H-ab {x} = Deloop-elim-prop H (λ x → (p q : x ≡ x) → Square p q q p) hlevel!
-  (λ p q → commutes→square (subst Group-is-abelian (sym (π₁BG≡G H)) H-ab p q)) x
+  (λ p q → commutes→square (subst is-commutative-group (sym (π₁BG≡G H)) H-ab p q)) x
 
-module _ {ℓ} (G : Group ℓ) (H : Group ℓ) (H-ab : Group-is-abelian H) where
+module _ {ℓ} (G : Group ℓ) (H : Group ℓ) (H-ab : is-commutative-group H) where
   -- The first cohomology of G with coefficients in H.
   -- We will show that it is equivalent to the set of group homomorphisms from G
   -- to H, assuming that H is abelian.
@@ -49,7 +40,7 @@ module _ {ℓ} (G : Group ℓ) (H : Group ℓ) (H-ab : Group-is-abelian H) where
   work : ∀ f → f base ≡ base → is-contr (fibre unpoint (inc f))
   work f ptf .centre = (f , ptf) , refl
   work f ptf .paths ((g , ptg) , g≡f) = Σ-prop-path! (Σ-pathp
-    (funext (Deloop-elim-set hlevel! (ptf ∙ sym ptg) λ z → ∥-∥-rec!
+    (funext (Deloop-elim-set G _ hlevel! (ptf ∙ sym ptg) λ z → ∥-∥-rec!
       (λ g≡f → J
         (λ g _ → ∀ ptg → Square (ap f (path z)) (ptf ∙ sym ptg) (ptf ∙ sym ptg) (ap g (path z)))
         (λ _ → ab→square H-ab _ _)
