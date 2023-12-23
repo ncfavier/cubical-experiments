@@ -9,14 +9,13 @@ open import Homotopy.Space.Sphere
 
 open import Meta.Idiom
 
-module TangentBundles where
-
 {-
 A work-in-progress formalisation of the first part of https://www.youtube.com/watch?v=9T9B9XBjVpk
 by David Jaz Myers, Ulrik Buchholtz, Dan Christensen and Egbert Rijke, up until
 the proof of the hairy ball theorem (except I don't have enough homotopy theory yet
 to conclude that n-1 must be odd from flipΣⁿ ≡ id).
 -}
+module TangentBundles where
 
 id≃ : ∀ {ℓ} {A : Type ℓ} → A ≃ A
 id≃ = id , id-equiv

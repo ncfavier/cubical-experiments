@@ -4,6 +4,7 @@ open import Cat.Prelude
 open import Cat.Functor.Base
 open import Cat.Functor.Properties
 
+-- eso + full-on-isos functors have monoidal fibres.
 module MonoidalFibres where
 
 private variable

@@ -1,5 +1,7 @@
 open import 1Lab.Prelude
 
+-- The identity function on homogeneous types "factors" through the propositional truncation
+-- (https://homotopytypetheory.org/2013/10/28/the-truncation-map-_-%E2%84%95-%E2%80%96%E2%84%95%E2%80%96-is-nearly-invertible)
 module Untruncate where
 
 point : ∀ {ℓ} (X : Type ℓ) → X → Type∙ ℓ
@@ -25,5 +27,5 @@ module _ {ℓ} (X : Type ℓ) (x : X) (hom : is-homogeneous X) where
   myst : (x : ∥ X ∥) → point′ x .fst
   myst x = point′ x .snd
 
-  factored : myst ∘ inc ≡ id
+  factored : myst ∘ inc ≡ id {A = X}
   factored = refl

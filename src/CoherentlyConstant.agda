@@ -1,6 +1,7 @@
 open import 1Lab.Prelude hiding (∥_∥³; ∥-∥³-elim-set; ∥-∥³-elim-prop; ∥-∥³-rec; ∥-∥³-is-prop; ∥-∥-rec-groupoid)
 open import 1Lab.Path.Reasoning
 
+-- Coherently constant maps into groupoids, now at https://1lab.dev/1Lab.HIT.Truncation.html#maps-into-groupoids
 module CoherentlyConstant where
 
 data ∥_∥³ {ℓ} (A : Type ℓ) : Type ℓ where

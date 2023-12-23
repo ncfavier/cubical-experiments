@@ -5,6 +5,9 @@ open import Cubical.Data.Nat
 open import Cubical.Data.Sigma
 open import Cubical.Foundations.Everything
 
+-- ℕ ≃ (m : Monoid) → ⟨ m ⟩ → ⟨ m ⟩
+module NatChurchMonoid where
+
 MEndo : Type₁
 MEndo = (m : Monoid ℓ-zero) → ⟨ m ⟩ → ⟨ m ⟩
 

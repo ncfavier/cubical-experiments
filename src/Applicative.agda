@@ -2,6 +2,7 @@ open import 1Lab.Type
 open import 1Lab.Path
 open import 1Lab.HLevel
 
+-- Applicative fully determines the underlying Functor.
 module Applicative {ℓ} where
 
 private variable

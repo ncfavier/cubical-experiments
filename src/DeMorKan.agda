@@ -1,6 +1,8 @@
-module DeMorKan where
-
 open import Cubical.Foundations.Prelude
+
+-- A silly attempt at implementing composition for the interval,
+-- for https://proofassistants.stackexchange.com/questions/2043/is-the-de-morgan-interval-kan
+module DeMorKan where
 
 -- The built-in I lives in its own "non-fibrant" universe, so Agda won't let
 -- us express partial elements and subtypes.

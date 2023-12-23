@@ -6,6 +6,7 @@ open import 1Lab.HLevel
 open import 1Lab.HLevel.Retracts
 open import 1Lab.Equiv
 
+-- Univalence from object classifiers in the sense of higher topos theory.
 module ObjectClassifier where
 
 -- The type of arrows/bundles/fibrations.
