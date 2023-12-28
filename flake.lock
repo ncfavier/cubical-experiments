@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "_1lab": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1703000056,
-        "narHash": "sha256-0fkPLqd0i7yxVFDub8I9YE/Fcx3HjTv2UsvzFaaXQM0=",
-        "owner": "plt-amy",
-        "repo": "1lab",
-        "rev": "299cddcece8b3914c1dd0ef499082ec36899eb0e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "plt-amy",
-        "repo": "1lab",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1702290317,
@@ -31,10 +15,27 @@
         "type": "indirect"
       }
     },
+    "onelab": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1703787585,
+        "narHash": "sha256-6sySMhTGtJKxsH9Vu0IrGR/ljL1laqV/3KFCwRB+QcA=",
+        "owner": "plt-amy",
+        "repo": "1lab",
+        "rev": "5e5ba283610a6d50cfee63e33ebf2d35bcdb3dc6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "plt-amy",
+        "ref": "even-odd",
+        "repo": "1lab",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "_1lab": "_1lab",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "onelab": "onelab"
       }
     }
   },

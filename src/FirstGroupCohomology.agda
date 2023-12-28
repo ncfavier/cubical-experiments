@@ -2,7 +2,7 @@ open import 1Lab.Path.Reasoning
 open import 1Lab.Prelude
 
 open import Algebra.Group.Cat.Base
-open import Algebra.Group.Concrete
+open import Algebra.Group.Concrete hiding (work)
 open import Algebra.Group.Ab
 
 open import Cat.Prelude
@@ -13,14 +13,8 @@ module FirstGroupCohomology where
 
 open Precategory
 
-Deloop∙ : ∀ {ℓ} (G : Group ℓ) → Type∙ ℓ
-Deloop∙ G = Deloop G , base
-
-DeloopC : ∀ {ℓ} (G : Group ℓ) → ConcreteGroup ℓ
-DeloopC G = concrete-group (Deloop∙ G) Deloop-is-connected (hlevel 3)
-
-π₁BG≡G : ∀ {ℓ} (G : Group ℓ) → π₁B (DeloopC G) ≡ G
-π₁BG≡G G = π₁≡π₀₊₁ ∙ sym (G≡π₁B G)
+π₁BG≡G : ∀ {ℓ} (G : Group ℓ) → π₁B (Concrete G) ≡ G
+π₁BG≡G G = π₁B≡π₀₊₁ (Concrete G) ∙ sym (G≡π₁B G)
 
 -- Any two loops commute in the delooping of an abelian group.
 ab→square : ∀ {ℓ} {H : Group ℓ} (H-ab : is-commutative-group H)
@@ -55,8 +49,8 @@ module _ {ℓ} (G : Group ℓ) (H : Group ℓ) (H-ab : is-commutative-group H) w
   unpoint≃ : H¹[G,H] ≃ (Deloop∙ G →∙ Deloop∙ H)
   unpoint≃ = (unpoint , unpoint-is-equiv) e⁻¹
 
-  delooping : (Deloop∙ G →∙ Deloop∙ H) ≃ Hom (Groups ℓ) (π₁B (DeloopC G)) (π₁B (DeloopC H))
-  delooping = _ , Π₁-is-ff
+  delooping : (Deloop∙ G →∙ Deloop∙ H) ≃ Hom (Groups ℓ) (π₁B (Concrete G)) (π₁B (Concrete H))
+  delooping = _ , π₁F-is-ff {_} {Concrete G} {Concrete H}
 
   first-group-cohomology : H¹[G,H] ≃ Hom (Groups ℓ) G H
   first-group-cohomology = unpoint≃ ∙e delooping

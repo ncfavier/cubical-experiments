@@ -1,11 +1,21 @@
 open import 1Lab.Path.Cartesian
 open import 1Lab.Path.Reasoning
-open import 1Lab.Prelude hiding (double-connection)
+open import 1Lab.Prelude
 
+open import Algebra.Group.Concrete
+
+open import Data.Set.Truncation
 open import Data.Bool
+open import Data.Int
+open import Data.Nat
+open import Data.Sum
 
+open import Homotopy.Space.Suspension.Properties
 open import Homotopy.Space.Suspension
+open import Homotopy.Connectedness
+open import Homotopy.Space.Circle
 open import Homotopy.Space.Sphere
+open import Homotopy.Base
 
 open import Meta.Idiom
 
@@ -16,9 +26,6 @@ the proof of the hairy ball theorem (except I don't have enough homotopy theory 
 to conclude that n-1 must be odd from flipΣⁿ ≡ id).
 -}
 module TangentBundles where
-
-id≃ : ∀ {ℓ} {A : Type ℓ} → A ≃ A
-id≃ = id , id-equiv
 
 record Functorial (M : Effect) : Typeω where
   private module M = Effect M
@@ -84,6 +91,9 @@ flipΣ N = S
 flipΣ S = N
 flipΣ (merid a i) = merid a (~ i)
 
+flipΣ∙ : ∀ {n} → Sⁿ (suc n) →∙ Sⁿ (suc n)
+flipΣ∙ = flipΣ , sym (merid N)
+
 flipΣ-involutive : ∀ {ℓ} {A : Type ℓ} → (p : Susp A) → flipΣ (flipΣ p) ≡ p
 flipΣ-involutive = Susp-elim _ refl refl λ _ _ → refl
 
@@ -92,16 +102,6 @@ flipΣ≃ = flipΣ , is-involutive→is-equiv flipΣ-involutive
 
 flipΣ-natural : is-natural flipΣ
 flipΣ-natural = Susp-elim _ refl refl λ _ _ → refl
-
-double-connection
-  : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : y ≡ z)
-  → Square p p q q
-double-connection {y = y} p q i j = hcomp (∂ i ∨ ∂ j) λ where
-  k (k = i0) → y
-  k (i = i0) → p (j ∨ ~ k)
-  k (i = i1) → q (j ∧ k)
-  k (j = i0) → p (i ∨ ~ k)
-  k (j = i1) → q (i ∧ k)
 
 twist : ∀ {ℓ} {A : Type ℓ} {a b : A} {p q : a ≡ b} (α : p ≡ q)
   → PathP (λ i → PathP (λ j → α i j ≡ α j (~ i))
@@ -146,12 +146,12 @@ Susp-ua→ {g = g} h i (merid a j) = hcomp (∂ i ∨ ∂ j) λ where
 
 -- The tangent bundles of spheres
 
-antipodeⁿ⁻¹ : (n : Nat) → Sⁿ⁻¹ n ≃ Sⁿ⁻¹ n
+antipodeⁿ⁻¹ : ∀ n → Sⁿ⁻¹ n ≃ Sⁿ⁻¹ n
 antipodeⁿ⁻¹ zero = id≃
 antipodeⁿ⁻¹ (suc n) = map≃ (antipodeⁿ⁻¹ n) ∙e flipΣ≃
 
-Tⁿ⁻¹ : (n : Nat) → Sⁿ⁻¹ n → Type
-θⁿ⁻¹ : (n : Nat) → (p : Sⁿ⁻¹ n) → Susp (Tⁿ⁻¹ n p) ≃ Sⁿ⁻¹ n
+Tⁿ⁻¹ : ∀ n → Sⁿ⁻¹ n → Type
+θⁿ⁻¹ : ∀ n → (p : Sⁿ⁻¹ n) → Susp (Tⁿ⁻¹ n p) ≃ Sⁿ⁻¹ n
 
 Tⁿ⁻¹ zero ()
 Tⁿ⁻¹ (suc n) = Susp-elim _
@@ -163,66 +163,153 @@ Tⁿ⁻¹ (suc n) = Susp-elim _
 θⁿ⁻¹ (suc n) = Susp-elim _
   id≃
   flipΣ≃
-  λ p → Σ-prop-pathp hlevel! $ Susp-ua→ λ s →
-    let module θ = Equiv (θⁿ⁻¹ n p) in sym $
-    flipΣ (map (θ.to ∘ flipΣ ∘ θ.from) s)       ≡⟨ ap flipΣ (map-∘ $ₚ s) ⟩
-    flipΣ (map θ.to (map (flipΣ ∘ θ.from) s))   ≡⟨ ap (flipΣ ∘ map θ.to) (map-∘ $ₚ s) ⟩
-    flipΣ (map θ.to (map flipΣ (map θ.from s))) ≡⟨ ap (flipΣ ∘ map θ.to) (rotateΣ $ₚ map θ.from s) ⟩
-    flipΣ (map θ.to (flipΣ (map θ.from s)))     ≡⟨ ap flipΣ (flipΣ-natural (map θ.from s)) ⟩
-    flipΣ (flipΣ (map θ.to (map θ.from s)))     ≡⟨ flipΣ-involutive _ ⟩
-    map θ.to (map θ.from s)                     ≡⟨ is-iso.rinv (map-iso (θⁿ⁻¹ n p)) s ⟩
-    s                                           ∎
+  λ p → Σ-prop-pathp hlevel! $ Susp-ua→ $ happly $ sym $
+    let module θ = Equiv (θⁿ⁻¹ n p) in
+    flipΣ ∘ map (θ.to ∘ flipΣ ∘ θ.from)       ≡⟨ flipΣ ∘⟨ map-∘ ⟩
+    flipΣ ∘ map θ.to ∘ map (flipΣ ∘ θ.from)   ≡⟨ flipΣ ∘ map _ ∘⟨ map-∘ ⟩
+    flipΣ ∘ map θ.to ∘ map flipΣ ∘ map θ.from ≡⟨ flipΣ ∘ map _ ∘⟨ rotateΣ ⟩∘ map _ ⟩
+    flipΣ ∘ map θ.to ∘ flipΣ ∘ map θ.from     ≡⟨ flipΣ ∘⟨ funext flipΣ-natural ⟩∘ map _ ⟩
+    flipΣ ∘ flipΣ ∘ map θ.to ∘ map θ.from     ≡⟨ funext flipΣ-involutive ⟩∘⟨refl ⟩
+    map θ.to ∘ map θ.from                     ≡⟨ funext (is-iso.rinv (map-iso (θⁿ⁻¹ n p))) ⟩
+    id                                        ∎
 
-θN : (n : Nat) → (p : Sⁿ⁻¹ n) → θⁿ⁻¹ n p .fst N ≡ p
+θN : ∀ n → (p : Sⁿ⁻¹ n) → θⁿ⁻¹ n p .fst N ≡ p
 θN (suc n) = Susp-elim _ refl refl λ p → transpose $
     ap sym (∙-idl _ ∙ ∙-idl _ ∙ ∙-elimr (∙-idl _ ∙ ∙-idl _ ∙ ∙-idr _ ∙ ∙-idl _ ∙ ∙-idl _ ∙ ∙-idl _))
   ∙ ap merid (θN n p)
 
-θS : (n : Nat) → (p : Sⁿ⁻¹ n) → θⁿ⁻¹ n p .fst S ≡ Equiv.to (antipodeⁿ⁻¹ n) p
+θS : ∀ n → (p : Sⁿ⁻¹ n) → θⁿ⁻¹ n p .fst S ≡ Equiv.to (antipodeⁿ⁻¹ n) p
 θS (suc n) = Susp-elim _ refl refl λ p → transpose $
     ap sym (∙-idl _ ∙ ∙-idl _ ∙ ∙-elimr (∙-idl _ ∙ ∙-idl _ ∙ ∙-idr _ ∙ ∙-idl _ ∙ ∙-idl _ ∙ ∙-idl _))
   ∙ ap (sym ∘ merid) (θS n p)
 
-cⁿ⁻¹ : (n : Nat) → (p : Sⁿ⁻¹ n) → Tⁿ⁻¹ n p → p ≡ Equiv.to (antipodeⁿ⁻¹ n) p
+cⁿ⁻¹ : ∀ n → (p : Sⁿ⁻¹ n) → Tⁿ⁻¹ n p → p ≡ Equiv.to (antipodeⁿ⁻¹ n) p
 cⁿ⁻¹ n p t = sym (θN n p) ∙ ap (θⁿ⁻¹ n p .fst) (merid t) ∙ θS n p
 
-even odd : Nat → Bool
-even zero = true
-even (suc n) = odd n
-odd zero = false
-odd (suc n) = even n
-
-flipΣⁿ : (n : Nat) → Sⁿ⁻¹ n → Sⁿ⁻¹ n
+flipΣⁿ : ∀ n → Sⁿ⁻¹ n → Sⁿ⁻¹ n
 flipΣⁿ zero = id
-flipΣⁿ (suc n) = if even n then flipΣ else id
+flipΣⁿ (suc n) = if⁺ even-or-odd n then flipΣ else id
 
-flipΣⁿ⁺² : (n : Nat) → map (map (flipΣⁿ n)) ≡ flipΣⁿ (suc (suc n))
+flipΣⁿ⁺² : ∀ n → map (map (flipΣⁿ n)) ≡ flipΣⁿ (suc (suc n))
 flipΣⁿ⁺² zero = ap map map-id ∙ map-id
-flipΣⁿ⁺² (suc n) with even n
-... | true = ap map rotateΣ ∙ rotateΣ
-... | false = ap map map-id ∙ map-id
+flipΣⁿ⁺² (suc n) with even-or-odd n
+... | inl e = ap map rotateΣ ∙ rotateΣ
+... | inr o = ap map map-id ∙ map-id
 
-antipode≡flip : (n : Nat) → Equiv.to (antipodeⁿ⁻¹ n) ≡ flipΣⁿ n
+antipode≡flip : ∀ n → Equiv.to (antipodeⁿ⁻¹ n) ≡ flipΣⁿ n
 antipode≡flip zero = refl
 antipode≡flip (suc zero) = ap (flipΣ ∘_) map-id
-antipode≡flip (suc (suc zero)) = -- TODO can i avoid this case?
-  flipΣ ∘ map (flipΣ ∘ map id)     ≡⟨ ap (flipΣ ∘_) map-∘ ⟩
-  flipΣ ∘ map flipΣ ∘ map (map id) ≡⟨ ap (λ x → flipΣ ∘ x ∘ map (map id)) rotateΣ ⟩
-  flipΣ ∘ flipΣ ∘ map (map id)     ≡⟨ funext (λ _ → flipΣ-involutive _) ⟩
-  map (map id)                     ≡⟨ ap map map-id ⟩
-  map id                           ≡⟨ map-id ⟩
-  id                               ∎
-antipode≡flip (suc (suc (suc n))) =
-  flipΣ ∘ map (flipΣ ∘ map (antipodeⁿ⁻¹ (suc n) .fst))     ≡⟨ ap (flipΣ ∘_) map-∘ ⟩
-  flipΣ ∘ map flipΣ ∘ map (map (antipodeⁿ⁻¹ (suc n) .fst)) ≡⟨ ap (λ x → flipΣ ∘ x ∘ map (map (antipodeⁿ⁻¹ (suc n) .fst))) rotateΣ ⟩
-  flipΣ ∘ flipΣ ∘ map (map (antipodeⁿ⁻¹ (suc n) .fst))     ≡⟨ funext (λ _ → flipΣ-involutive _) ⟩
-  map (map (antipodeⁿ⁻¹ (suc n) .fst))                     ≡⟨ ap (map ∘ map) (antipode≡flip (suc n)) ⟩
-  map (map (flipΣⁿ (suc n)))                               ≡⟨ flipΣⁿ⁺² (suc n) ⟩
-  flipΣⁿ (suc (suc (suc n)))                               ∎
+antipode≡flip (suc (suc n)) =
+  flipΣ ∘ map (flipΣ ∘ map (antipodeⁿ⁻¹ n .fst))     ≡⟨ flipΣ ∘⟨ map-∘ ⟩
+  flipΣ ∘ map flipΣ ∘ map (map (antipodeⁿ⁻¹ n .fst)) ≡⟨ flipΣ ∘⟨ rotateΣ ⟩∘ map _ ⟩
+  flipΣ ∘ flipΣ ∘ map (map (antipodeⁿ⁻¹ n .fst))     ≡⟨ funext flipΣ-involutive ⟩∘⟨refl ⟩
+  map (map (antipodeⁿ⁻¹ n .fst))                     ≡⟨ ap (map ∘ map) (antipode≡flip n) ⟩
+  map (map (flipΣⁿ n))                               ≡⟨ flipΣⁿ⁺² n ⟩
+  flipΣⁿ (suc (suc n))                               ∎
 
-hairy-ball : (n : Nat) → ((p : Sⁿ⁻¹ n) → Tⁿ⁻¹ n p) → flipΣⁿ n ≡ id
-hairy-ball n sec = sym $ funext (λ p → cⁿ⁻¹ n p (sec p)) ∙ antipode≡flip n
+-- If the tangent bundle of the n-sphere admits a section for even n, then we get
+-- a homotopy between flipΣ and the identity.
+section→homotopy : ∀ n → ((p : Sⁿ⁻¹ n) → Tⁿ⁻¹ n p) → flipΣⁿ n ≡ id
+section→homotopy n sec = sym $ funext (λ p → cⁿ⁻¹ n p (sec p)) ∙ antipode≡flip n
 
--- Showing that this in turn implies that n-1 is odd requires more homotopy theory
--- than I have available: one can use πₙ(Sⁿ) ≃ ℤ to define the degree of a map,
--- which should be -1 for flipΣ and 1 for id.
+-- Now to prove that this in turn implies that n-1 is odd requires a bit of
+-- homotopy theory in order to define the degrees of (unpointed!) maps of spheres.
+
+degree∙ : ∀ n → (Sⁿ (suc n) →∙ Sⁿ (suc n)) → Int
+degree∙ zero f = ΩS¹≃integers .fst (ap (transport SuspS⁰≡S¹) (Ωⁿ≃Sⁿ-map 1 .fst f))
+degree∙ (suc n) = {! πₙ(Sⁿ) ≃ ℤ !}
+
+degree∙-map : ∀ n f → degree∙ (suc n) (map (f .fst) , refl) ≡ degree∙ n f
+degree∙-map n f = {! the isomorphisms above should be compatible with suspension !}
+
+degree∙-id : ∀ n → degree∙ n id∙ ≡ 1
+degree∙-id zero = refl
+degree∙-id (suc n) = ap (degree∙ (suc n)) p ·· degree∙-map n id∙ ·· degree∙-id n
+  where
+    p : id∙ ≡ (map id , refl)
+    p = Σ-pathp (sym map-id) refl
+
+degree∙-flipΣ : ∀ n → degree∙ n flipΣ∙ ≡ -1
+degree∙-flipΣ zero = refl -- neat.
+degree∙-flipΣ (suc n) = ap (degree∙ (suc n)) p ·· degree∙-map n flipΣ∙ ·· degree∙-flipΣ n
+  where
+    p : flipΣ∙ ≡ (map flipΣ , refl)
+    p = Σ-pathp (sym rotateΣ) (λ i j → merid N (~ i ∧ ~ j))
+
+-- In order to define degrees of unpointed maps, we show that the function that
+-- forgets the fact that a map Sⁿ →∙ Sⁿ is pointed is an equivalence.
+-- For n = 1, this is due to the fact that S¹ is the delooping of an abelian
+-- group; for n > 1, we can use the fact that the n-sphere is simply connected.
+Sⁿ-unpoint-injective
+  : ∀ n f → (p q : f N ≡ N)
+  → ∥ Path (Sⁿ (suc n) →∙ Sⁿ (suc n)) (f , p) (f , q) ∥
+Sⁿ-unpoint-injective zero f p q = inc (S¹-cohomology.injective refl)
+  where
+    open ConcreteGroup
+    Sⁿ⁼¹-concrete : ConcreteGroup lzero
+    Sⁿ⁼¹-concrete .B = Sⁿ 1
+    Sⁿ⁼¹-concrete .has-is-connected = is-connected→is-connected∙ (Sⁿ⁻¹-is-connected 2)
+    Sⁿ⁼¹-concrete .has-is-groupoid = subst is-groupoid (sym SuspS⁰≡S¹) S¹-is-groupoid
+
+    Sⁿ⁼¹≡S¹ : Sⁿ⁼¹-concrete ≡ S¹-concrete
+    Sⁿ⁼¹≡S¹ = ConcreteGroup-path (Σ-path SuspS⁰≡S¹ refl)
+
+    Sⁿ⁼¹-ab : is-concrete-abelian Sⁿ⁼¹-concrete
+    Sⁿ⁼¹-ab = subst is-concrete-abelian (sym Sⁿ⁼¹≡S¹) S¹-concrete-abelian
+
+    module S¹-cohomology = Equiv
+      (first-concrete-abelian-group-cohomology
+        Sⁿ⁼¹-concrete Sⁿ⁼¹-concrete Sⁿ⁼¹-ab)
+Sⁿ-unpoint-injective (suc n) f p q = ap (f ,_) <$> simply-connected p q
+
+Sⁿ-class
+  : ∀ n
+  → ∥ (Sⁿ (suc n) →∙ Sⁿ (suc n)) ∥₀
+  → ∥ (⌞ Sⁿ (suc n) ⌟ → ⌞ Sⁿ (suc n) ⌟) ∥₀
+Sⁿ-class n = ∥-∥₀-rec (hlevel 2) λ (f , _) → inc f
+
+Sⁿ-pointed≃unpointed
+  : ∀ n
+  → ∥ (Sⁿ (suc n) →∙ Sⁿ (suc n)) ∥₀
+  ≃ ∥ (⌞ Sⁿ (suc n) ⌟ → ⌞ Sⁿ (suc n) ⌟) ∥₀
+Sⁿ-pointed≃unpointed n .fst = Sⁿ-class n
+Sⁿ-pointed≃unpointed n .snd = injective-surjective→is-equiv! (inj _ _) surj
+  where
+    inj : ∀ x y → Sⁿ-class n x ≡ Sⁿ-class n y → x ≡ y
+    inj = ∥-∥₀-elim₂ (λ _ _ → hlevel 2) λ (f , ptf) (g , ptg) f≡g →
+      ∥-∥₀-path.from do
+        f≡g ← ∥-∥₀-path.to f≡g
+        J (λ g _ → ∀ ptg → ∥ (f , ptf) ≡ (g , ptg) ∥)
+          (Sⁿ-unpoint-injective n f ptf)
+          f≡g ptg
+
+    surj : is-surjective (Sⁿ-class n)
+    surj = ∥-∥₀-elim (λ _ → hlevel 2) λ f → do
+      pointed ← connected (f N) N
+      pure (inc (f , pointed) , refl)
+
+degree : ∀ n → (⌞ Sⁿ (suc n) ⌟ → ⌞ Sⁿ (suc n) ⌟) → Int
+degree n f = ∥-∥₀-rec (hlevel 2)
+  (degree∙ n)
+  (Equiv.from (Sⁿ-pointed≃unpointed n) (inc f))
+
+degree∙≡degree : ∀ n f∙ → degree n (f∙ .fst) ≡ degree∙ n f∙
+degree∙≡degree n f∙ = ap (∥-∥₀-rec _ _)
+  (U.injective₂ {x = U.from (inc (f∙ .fst))} {y = inc f∙} (U.ε _) refl)
+  where module U = Equiv (Sⁿ-pointed≃unpointed n)
+
+flip≠id : ∀ n → ¬ flipΣ ≡ id {A = Sⁿ⁻¹ (suc n)}
+flip≠id zero h = subst (Susp-elim _ ⊤ ⊥ (λ ())) (h $ₚ S) _
+flip≠id (suc n) h = negsuc≠pos $
+  -1               ≡˘⟨ degree∙-flipΣ n ⟩
+  degree∙ n flipΣ∙ ≡˘⟨ degree∙≡degree n _ ⟩
+  degree n flipΣ   ≡⟨ ap (degree n) h ⟩
+  degree n id      ≡⟨ degree∙≡degree n _ ⟩
+  degree∙ n id∙    ≡⟨ degree∙-id n ⟩
+  1                ∎
+
+hairy-ball : ∀ n → ((p : Sⁿ⁻¹ n) → Tⁿ⁻¹ n p) → is-even n
+hairy-ball zero sec = ∣-zero
+hairy-ball (suc n) sec with even-or-odd n | section→homotopy (suc n) sec
+... | inl e | h = absurd (flip≠id n h)
+... | inr o | _ = o

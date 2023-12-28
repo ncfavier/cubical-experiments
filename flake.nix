@@ -1,8 +1,8 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs/haskell-updates";
-    _1lab = {
-      url = "github:plt-amy/1lab";
+    onelab = {
+      url = "github:plt-amy/1lab/even-odd";
       flake = false;
     };
   };
@@ -18,9 +18,9 @@
       nativeBuildInputs = with pkgs; [
         (agda.withPackages (p: with p; [
           cubical
-          (_1lab.overrideAttrs (old: lib.optionalAttrs (inputs ? _1lab) {
+          (_1lab.overrideAttrs (old: lib.optionalAttrs (inputs ? onelab) {
             version = "unstable";
-            src = inputs._1lab;
+            src = inputs.onelab;
             GHCRTS = "-M5G";
           }))
         ]))
