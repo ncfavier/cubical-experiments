@@ -146,10 +146,6 @@ Susp-ua→ {g = g} h i (merid a j) = hcomp (∂ i ∨ ∂ j) λ where
 
 -- The tangent bundles of spheres
 
-antipodeⁿ⁻¹ : ∀ n → Sⁿ⁻¹ n ≃ Sⁿ⁻¹ n
-antipodeⁿ⁻¹ zero = id≃
-antipodeⁿ⁻¹ (suc n) = map≃ (antipodeⁿ⁻¹ n) ∙e flipΣ≃
-
 Tⁿ⁻¹ : ∀ n → Sⁿ⁻¹ n → Type
 θⁿ⁻¹ : ∀ n → (p : Sⁿ⁻¹ n) → Susp (Tⁿ⁻¹ n p) ≃ Sⁿ⁻¹ n
 
@@ -172,6 +168,10 @@ Tⁿ⁻¹ (suc n) = Susp-elim _
     flipΣ ∘ flipΣ ∘ map θ.to ∘ map θ.from     ≡⟨ funext flipΣ-involutive ⟩∘⟨refl ⟩
     map θ.to ∘ map θ.from                     ≡⟨ funext (is-iso.rinv (map-iso (θⁿ⁻¹ n p))) ⟩
     id                                        ∎
+
+antipodeⁿ⁻¹ : ∀ n → Sⁿ⁻¹ n ≃ Sⁿ⁻¹ n
+antipodeⁿ⁻¹ zero = id≃
+antipodeⁿ⁻¹ (suc n) = map≃ (antipodeⁿ⁻¹ n) ∙e flipΣ≃
 
 θN : ∀ n → (p : Sⁿ⁻¹ n) → θⁿ⁻¹ n p .fst N ≡ p
 θN (suc n) = Susp-elim _ refl refl λ p → transpose $
@@ -237,13 +237,13 @@ degree∙-flipΣ (suc n) = ap (degree∙ (suc n)) p ·· degree∙-map n flipΣ�
     p = Σ-pathp (sym rotateΣ) (λ i j → merid N (~ i ∧ ~ j))
 
 -- In order to define degrees of unpointed maps, we show that the function that
--- forgets the fact that a map Sⁿ →∙ Sⁿ is pointed is an equivalence.
+-- forgets the pointing of a map Sⁿ →∙ Sⁿ is a bijection (up to homotopy).
 -- For n = 1, this is due to the fact that S¹ is the delooping of an abelian
 -- group; for n > 1, we can use the fact that the n-sphere is simply connected.
-Sⁿ-unpoint-injective
+Sⁿ-class-injective
   : ∀ n f → (p q : f N ≡ N)
   → ∥ Path (Sⁿ (suc n) →∙ Sⁿ (suc n)) (f , p) (f , q) ∥
-Sⁿ-unpoint-injective zero f p q = inc (S¹-cohomology.injective refl)
+Sⁿ-class-injective zero f p q = inc (S¹-cohomology.injective refl)
   where
     open ConcreteGroup
     Sⁿ⁼¹-concrete : ConcreteGroup lzero
@@ -260,7 +260,7 @@ Sⁿ-unpoint-injective zero f p q = inc (S¹-cohomology.injective refl)
     module S¹-cohomology = Equiv
       (first-concrete-abelian-group-cohomology
         Sⁿ⁼¹-concrete Sⁿ⁼¹-concrete Sⁿ⁼¹-ab)
-Sⁿ-unpoint-injective (suc n) f p q = ap (f ,_) <$> simply-connected p q
+Sⁿ-class-injective (suc n) f p q = ap (f ,_) <$> simply-connected p q
 
 Sⁿ-class
   : ∀ n
@@ -275,12 +275,12 @@ Sⁿ-pointed≃unpointed
 Sⁿ-pointed≃unpointed n .fst = Sⁿ-class n
 Sⁿ-pointed≃unpointed n .snd = injective-surjective→is-equiv! (inj _ _) surj
   where
-    inj : ∀ x y → Sⁿ-class n x ≡ Sⁿ-class n y → x ≡ y
+    inj : ∀ f g → Sⁿ-class n f ≡ Sⁿ-class n g → f ≡ g
     inj = ∥-∥₀-elim₂ (λ _ _ → hlevel 2) λ (f , ptf) (g , ptg) f≡g →
       ∥-∥₀-path.from do
         f≡g ← ∥-∥₀-path.to f≡g
         J (λ g _ → ∀ ptg → ∥ (f , ptf) ≡ (g , ptg) ∥)
-          (Sⁿ-unpoint-injective n f ptf)
+          (Sⁿ-class-injective n f ptf)
           f≡g ptg
 
     surj : is-surjective (Sⁿ-class n)
