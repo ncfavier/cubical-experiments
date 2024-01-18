@@ -2,32 +2,32 @@
   "nodes": {
     "nixpkgs": {
       "locked": {
-        "lastModified": 1702290317,
-        "narHash": "sha256-FRLWvWbdaGYA9k34/gzUFf3WhDxr/nYsfRdafT9bgOk=",
+        "lastModified": 1704194953,
+        "narHash": "sha256-RtDKd8Mynhe5CFnVT8s0/0yqtWFMM9LmCzXv/YKxnq4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "0b8c1b3e5f1e32250b110daaeca68d65c2d0f78b",
+        "rev": "bd645e8668ec6612439a9ee7e71f7eac4099d4f6",
         "type": "github"
       },
       "original": {
         "id": "nixpkgs",
-        "ref": "haskell-updates",
+        "ref": "nixos-unstable",
         "type": "indirect"
       }
     },
     "onelab": {
       "flake": false,
       "locked": {
-        "lastModified": 1703787585,
-        "narHash": "sha256-6sySMhTGtJKxsH9Vu0IrGR/ljL1laqV/3KFCwRB+QcA=",
+        "lastModified": 1705589314,
+        "narHash": "sha256-Rh5Z8GLjs0IA2SCU+ecDReLQSx3HtuFJScgr6PG0QPk=",
         "owner": "plt-amy",
         "repo": "1lab",
-        "rev": "5e5ba283610a6d50cfee63e33ebf2d35bcdb3dc6",
+        "rev": "b6efe59caa817de199d74dcaf9a5cba6d337aa8c",
         "type": "github"
       },
       "original": {
         "owner": "plt-amy",
-        "ref": "even-odd",
+        "ref": "ncf/misc",
         "repo": "1lab",
         "type": "github"
       }

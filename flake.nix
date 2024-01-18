@@ -1,8 +1,8 @@
 {
   inputs = {
-    nixpkgs.url = "nixpkgs/haskell-updates";
+    nixpkgs.url = "nixpkgs/nixos-unstable";
     onelab = {
-      url = "github:plt-amy/1lab/even-odd";
+      url = "github:plt-amy/1lab/ncf/misc";
       flake = false;
     };
   };
@@ -22,6 +22,18 @@
             version = "unstable";
             src = inputs.onelab;
             GHCRTS = "-M5G";
+            postBuild = ''
+              shopt -s nullglob globstar extglob
+              interfaceFile() {
+                local f=$1
+                echo "''${f%.@(agda|lagda.md)}.agdai"
+              }
+              for f in src/**/*.agda src/**/*.lagda.md; do
+                if [[ ! -e "$(interfaceFile "$f")" ]]; then
+                  agda "$f"
+                fi
+              done
+            '';
           }))
         ]))
       ];

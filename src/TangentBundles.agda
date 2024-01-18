@@ -2,6 +2,7 @@ open import 1Lab.Path.Cartesian
 open import 1Lab.Path.Reasoning
 open import 1Lab.Prelude
 
+open import Algebra.Group.Concrete.Abelian
 open import Algebra.Group.Concrete
 
 open import Data.Set.Truncation
@@ -11,6 +12,7 @@ open import Data.Nat
 open import Data.Sum
 
 open import Homotopy.Space.Suspension.Properties
+open import Homotopy.Connectedness.Automation
 open import Homotopy.Space.Suspension
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
