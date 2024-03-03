@@ -22,9 +22,8 @@ of these places:
 -}
 module Hats where
 
--- We assume there's at least one person, that each person is given a
--- unique number from 0 to n - 1 during the concertation phase, and that
--- everyone remembers everyone's numbers.
+-- We assume there's at least one person, and that everyone has a unique
+-- "name" between 0 and n - 1, known to everyone else.
 module _ (n-1 : Nat) where
   private
     n = suc n-1
