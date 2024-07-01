@@ -20,12 +20,23 @@ is-homogeneous X = ∀ x y → point X x ≡ point X y
   ∥-∥-elim {P = λ _ → Singleton b} (λ _ → is-contr→is-prop (contr _ Singleton-is-contr))
     (λ x → f x , f-const x) x .fst
 
-module _ {ℓ} (X : Type ℓ) (x : X) (hom : is-homogeneous X) where
-  point′ : ∥ X ∥ → Type∙ ℓ
-  point′ = ∥-∥-rec-const (point X) (point X x) (hom x)
+module old {ℓ} (X : Type ℓ) (x : X) (hom : is-homogeneous X) where
+  point' : ∥ X ∥ → Type∙ ℓ
+  point' = ∥-∥-rec-const (point X) (point X x) (hom x)
 
-  myst : (x : ∥ X ∥) → point′ x .fst
-  myst x = point′ x .snd
+  myst : (x : ∥ X ∥) → point' x .fst
+  myst x = point' x .snd
 
-  factored : myst ∘ inc ≡ id {A = X}
-  factored = refl
+  _ : myst ∘ inc ≡ id
+  _ = refl
+
+-- Simplification by David Wärn https://gist.github.com/dwarn/31d7002a5ca8df0443b31501056e357f
+module new {ℓ : Level} {X : Type ℓ} where
+  fam : ∥ X ∥ → n-Type ℓ 0
+  fam = ∥-∥-rec! λ x → el (Singleton x) (contr _ Singleton-is-contr)
+
+  magic : X → X
+  magic = fst ∘ centre ∘ is-tr ∘ fam ∘ inc
+
+  _ : magic ≡ id
+  _ = refl
