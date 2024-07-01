@@ -1,10 +1,10 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
-    onelab = {
-      url = "github:plt-amy/1lab/ncf/misc";
-      flake = false;
-    };
+    # onelab = {
+    #   url = "github:plt-amy/1lab";
+    #   flake = false;
+    # };
   };
 
   outputs = inputs@{ self, nixpkgs, ... }: let
@@ -18,23 +18,7 @@
       nativeBuildInputs = with pkgs; [
         (agda.withPackages (p: with p; [
           cubical
-          (_1lab.overrideAttrs (old: lib.optionalAttrs (inputs ? onelab) {
-            version = "unstable";
-            src = inputs.onelab;
-            GHCRTS = "-M5G";
-            postBuild = ''
-              shopt -s nullglob globstar extglob
-              interfaceFile() {
-                local f=$1
-                echo "''${f%.@(agda|lagda.md)}.agdai"
-              }
-              for f in src/**/*.agda src/**/*.lagda.md; do
-                if [[ ! -e "$(interfaceFile "$f")" ]]; then
-                  agda "$f"
-                fi
-              done
-            '';
-          }))
+          _1lab
         ]))
       ];
       LC_ALL = "C.UTF-8";
