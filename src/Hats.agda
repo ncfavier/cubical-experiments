@@ -55,7 +55,7 @@ module _ (n-1 : Nat) where
     -- In order to conclude, we use the fact that any surjection between finite
     -- sets of equal cardinality is an equivalence.
     exactly-one-right : ∀ hats → is-contr (Σ Person λ i → hats ✓ i)
-    exactly-one-right hats = is-hlevel≃ 0 (Fibre-equiv _ hats e⁻¹) (p-is-equiv .is-eqv hats)
+    exactly-one-right hats = Equiv→is-hlevel 0 (Fibre-equiv _ hats e⁻¹) (p-is-equiv .is-eqv hats)
       where
         probability : ∀ i → Iso (Σ Hats (_✓ i)) (Fin n-1 → Hat)
         probability i .fst (hats , _) = delete hats i

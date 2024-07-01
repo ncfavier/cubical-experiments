@@ -3,7 +3,7 @@ open import 1Lab.Type.Sigma
 open import 1Lab.Type.Pointed
 open import 1Lab.Path
 open import 1Lab.HLevel
-open import 1Lab.HLevel.Retracts
+open import 1Lab.HLevel.Closure
 open import 1Lab.Equiv
 
 -- Univalence from object classifiers in the sense of higher topos theory.
@@ -93,4 +93,4 @@ lemma {ℓ} A = Iso→Equiv λ where
 
 -- Equivalences form an identity system, which is another way to state univalence.
 univalence : ∀ {ℓ} (A : Type ℓ) → is-contr (Σ (Type ℓ) λ B → A ≃ B)
-univalence {ℓ} A = is-hlevel≃ 0 (lemma A e⁻¹) (Type↓-is-classifier (! A))
+univalence {ℓ} A = Equiv→is-hlevel 0 (lemma A e⁻¹) (Type↓-is-classifier (! A))

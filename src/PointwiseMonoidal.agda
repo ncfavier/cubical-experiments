@@ -26,8 +26,8 @@ Pointwise = pw where
     nat : Cat⟨ x .fst , x .snd ⟩ => Cat⟨ y .fst , y .snd ⟩
     nat .η x = (na .η x) , (nb .η x)
     nat .is-natural x y f i = (na .is-natural x y f i) , (nb .is-natural x y f i)
-  prod .F-id = Nat-path (λ _ → M .-⊗- .F-id)
-  prod .F-∘ f g = Nat-path (λ _ → M .-⊗- .F-∘ _ _)
+  prod .F-id = ext λ _ → M .-⊗- .F-id
+  prod .F-∘ f g = ext λ _ → M .-⊗- .F-∘ _ _
   pw : Monoidal-category Cat[ C , D ]
   pw .-⊗- = prod
   pw .Unit = Const (M .Unit)
