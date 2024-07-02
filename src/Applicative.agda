@@ -1,6 +1,11 @@
-open import 1Lab.Type
-open import 1Lab.Path
+open import 1Lab.Equiv
+open import 1Lab.Extensionality
 open import 1Lab.HLevel
+open import 1Lab.HLevel.Closure
+open import 1Lab.Path
+open import 1Lab.Reflection.Record
+open import 1Lab.Type
+open import 1Lab.Type.Sigma
 
 -- Applicative fully determines the underlying Functor.
 module Applicative {ℓ} where
@@ -44,6 +49,16 @@ record applicative-functor (F : Type ℓ → Type ℓ) (app : applicative F) : T
       → g <$> (f <*> x) ≡ (g ∘'_) <$> f <*> x
 
 open applicative-functor
+unquoteDecl eqv = declare-record-iso eqv (quote applicative-functor)
+
+applicative-functor-path
+  : ∀ {F : Type ℓ → Type ℓ} {app} {a b : applicative-functor F app}
+  → (∀ {A B} (f : A → B) x → a ._<$>_ f x ≡ b ._<$>_ f x)
+  → a ≡ b
+applicative-functor-path {F = F} {app = app} p = Iso.injective eqv (Σ-prop-path (λ _ → hlevel 1) (ext λ f → p f))
+  where instance
+    F-sets : ∀ {x} → H-Level (F x) 2
+    F-sets = hlevel-instance (app .applicative.sets)
 
 applicative-determines-functor : ∀ {F} (app : applicative F)
   → is-contr (applicative-functor F app)
@@ -67,16 +82,9 @@ applicative-determines-functor {F} app = p where
     pure g <*> (f <*> x) ≡⟨ sym <*>-composition ⟩
     pure _∘'_ <*> pure g <*> f <*> x ≡⟨ ap (λ y → y <*> f <*> x) <*>-homomorphism ⟩
     pure (g ∘'_) <*> f <*> x ∎
-  p .paths app' i ._<$>_ f x = path i where
-    module A = applicative-functor app'
-    path =
-      pure f <*> x ≡⟨ ap (_<*> x) (sym A.pure-natural) ⟩
-      (f ∘'_) A.<$> pure id <*> x ≡⟨ sym A.<*>-natural-B ⟩
-      f A.<$> (pure id <*> x) ≡⟨ ap (f A.<$>_) <*>-identity ⟩
-      f A.<$> x ∎
-  -- Annoying mechanical h-level proofs
-  p .paths app' i .<$>-identity = {!   !}
-  p .paths app' i .<$>-composition = {!   !}
-  p .paths app' i .pure-natural = {!   !}
-  p .paths app' i .<*>-extranatural-A = {!   !}
-  p .paths app' i .<*>-natural-B = {!   !}
+  p .paths app' = applicative-functor-path λ f x →
+    pure f <*> x                ≡⟨ ap (_<*> x) (sym A.pure-natural) ⟩
+    (f ∘'_) A.<$> pure id <*> x ≡˘⟨ A.<*>-natural-B ⟩
+    f A.<$> (pure id <*> x)     ≡⟨ ap (f A.<$>_) <*>-identity ⟩
+    f A.<$> x                   ∎
+    where module A = applicative-functor app'
