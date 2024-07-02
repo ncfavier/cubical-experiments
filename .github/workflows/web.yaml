@@ -9,8 +9,13 @@ jobs:
         with:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-            extra-substituters = https://nix.monade.li https://ncfavier.cachix.org https://1lab.cachix.org
-            extra-trusted-public-keys = nix.monade.li:2Zgy59ai/edDBizXByHMqiGgaHlE04G6Nzuhx1RPFgo= ncfavier.cachix.org-1:RpBMt+EIZOwVwU1CW71cWZAVJ9DCNbCMsX8VOGSf3ME= 1lab.cachix.org-1:eYjd9F9RfibulS4OSFBYeaTMxWojPYLyMqgJHDvG1fs=
+            extra-substituters = https://nix.monade.li
+            extra-trusted-public-keys = nix.monade.li:2Zgy59ai/edDBizXByHMqiGgaHlE04G6Nzuhx1RPFgo=
+      - uses: cachix/cachix-action@v15
+        with:
+          name: ncfavier
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          extraPullNames: 1lab
       - name: Build
         run: |
           web=$(nix -L build --print-out-paths)
