@@ -20,6 +20,7 @@
           cubical
           _1lab
         ]))
+        htmlq
       ];
       LC_ALL = "C.UTF-8";
       postHead = ''
@@ -49,27 +50,26 @@
           else
             echo "import $mod" >> Everything.agda
           fi
-          cat >> mods << EOF
-        <a class="Keyword">import</a> <a href="$mod.html" class="Module">$mod</a>
-        EOF
         done
         agda -i . --html --html-dir="$out" --html-highlight=all --css=style.css --highlight-occurrences Everything.agda
         agda -i . --html --html-dir="$out" --html-highlight=all --css=style.css --highlight-occurrences Everything-1Lab.agda
         for f in "$out"/*.html; do
           base=''${f##*/} mod=''${base%%.html}
+          printf -v mod %b "''${mod//%/'\x'}"
           src=(src/"$mod".@(agda|lagda*))
           if (( ''${#src} )); then
             substituteInPlace "$f" \
-              --replace '</head>' "$postHead</head>" \
-              --replace '<body>' "<body>''${preBodyInternal/@MODULE@/"''${src[0]}"}"
+              --replace-fail '</head>' "$postHead</head>" \
+              --replace-fail '<body>' "<body>''${preBodyInternal/@MODULE@/"''${src[0]}"}"
           else
             substituteInPlace "$f" \
-              --replace '</head>' "$postHead</head>" \
-              --replace '<body>' "<body>$preBodyExternal"
+              --replace-fail '</head>' "$postHead</head>" \
+              --replace-fail '<body>' "<body>$preBodyExternal"
           fi
         done
         cp ${self}/{index.html,style.css} "$out"/
-        substituteInPlace "$out"/index.html --subst-var-by modules "$(< mods)"
+        modules=$(for e in Everything-1Lab Everything; do htmlq pre.Agda -f "$out/$e.html"; done)
+        substituteInPlace "$out"/index.html --subst-var-by modules "$modules"
       '';
     };
   };
