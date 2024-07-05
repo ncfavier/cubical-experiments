@@ -1,5 +1,5 @@
 name: cubical-experiments
-include: src
+include: src _build
 depend:
     cubical
     1lab

@@ -1,0 +1,63 @@
+cabal-version:      3.4
+name:               cubical-experiments-shake
+version:            0.1.0.0
+license:            AGPL-3.0-or-later
+author:             Naïm Favier
+maintainer:         n@monade.li
+category:           Development
+build-type:         Simple
+
+executable cubical-experiments-shake
+    ghc-options: -Wall
+    main-is:          Main.hs
+    other-modules: HTML.Base,
+                   HTML.Backend,
+    build-depends:    base ^>=4.18.2.1,
+                      Agda,
+                      shake,
+                      blaze-html,
+                      containers,
+                      deepseq,
+                      directory,
+                      filepath,
+                      mtl,
+                      regex-tdfa,
+                      silently,
+                      split,
+                      text,
+                      transformers,
+                      uri-encode,
+    hs-source-dirs:   .
+    default-language: GHC2021
+    default-extensions:
+      BangPatterns
+      BlockArguments
+      ConstraintKinds
+      DefaultSignatures
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveTraversable
+      DerivingStrategies
+      ExistentialQuantification
+      FlexibleContexts
+      FlexibleInstances
+      FunctionalDependencies
+      GADTs
+      GeneralizedNewtypeDeriving
+      InstanceSigs
+      LambdaCase
+      MultiParamTypeClasses
+      MultiWayIf
+      NamedFieldPuns
+      OverloadedStrings
+      PatternSynonyms
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TupleSections
+      TypeFamilies
+      TypeOperators
+      TypeSynonymInstances
+      ViewPatterns

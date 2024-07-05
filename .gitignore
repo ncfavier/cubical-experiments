@@ -2,3 +2,6 @@ result
 result-*
 *.agdai
 MAlonzo/**
+.shake
+dist-newstyle
+_build
