@@ -9,6 +9,8 @@ import Agda.Utils.Monad
 import Control.Monad.Error.Class
 
 import Data.Foldable
+import Data.List
+import Data.Map qualified as Map
 import Data.Text qualified as T
 
 import Development.Shake
@@ -18,20 +20,20 @@ import Development.Shake.FilePath
 import HTML.Backend
 import HTML.Base
 
-import Text.Regex.TDFA
+import Text.HTML.TagSoup
 
-newtype ModuleCompileQ = ModuleCompileQ FilePath
+newtype CompileDirectory = CompileDirectory (FilePath, FilePath)
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
+type instance RuleResult CompileDirectory = ()
 
-type instance RuleResult ModuleCompileQ = ()
-
-sourceDir, buildDir, htmlDir, siteDir, everythingLoadPrimitives, everythingNoLoadPrimitives :: FilePath
+sourceDir, source1labDir, buildDir, htmlDir, siteDir, everything, everything1lab :: FilePath
 sourceDir = "src"
+source1labDir = "src-1lab"
 buildDir = "_build"
 htmlDir = buildDir </> "html"
 siteDir = buildDir </> "site"
-everythingLoadPrimitives = buildDir </> "EverythingLoadPrimitives.agda"
-everythingNoLoadPrimitives = buildDir </> "EverythingNoLoadPrimitives.agda"
+everything = sourceDir </> "Everything.agda"
+everything1lab = source1labDir </> "Everything-1lab.agda"
 
 myHtmlBackend :: Backend
 myHtmlBackend = Backend htmlBackend'
@@ -40,17 +42,15 @@ myHtmlBackend = Backend htmlBackend'
     , htmlFlagHighlightOccurrences = True
     , htmlFlagCssFile = Just "style.css"
     , htmlFlagHighlight = HighlightCode
+    , htmlFlagLibToURL = Map.fromList
+      [ ("agda-builtins", Just "https://agda.github.io/cubical")
+      , ("standard-library-2.0", Just "https://agda.github.io/agda-stdlib/v2.0")
+      , ("cubical-0.7", Just "https://agda.github.io/cubical")
+      , ("1lab", Just "https://1lab.dev")
+      , ("cubical-experiments", Nothing)
+      ]
     }
   }
-
--- | Should this file be compiled with --load-primitives?
--- Modules that depend on 1lab require --no-load-primitives while
--- modules that depend on cubical require --load-primitives, and those
--- flags conflict so we have to split them into separate Everything files...
-loadPrimitives :: FilePath -> Action Bool
-loadPrimitives f = do
-  contents <- readFile' (sourceDir </> f)
-  pure $ not $ contents =~ ("import *(1Lab|Cat)\\." :: String)
 
 filenameToModule :: FilePath -> String
 filenameToModule f = dropExtension f
@@ -61,14 +61,25 @@ makeEverythingFile = unlines . map (\ m -> "import " <> filenameToModule m)
 readFileText :: FilePath -> Action T.Text
 readFileText = fmap T.pack . readFile'
 
+importToModule :: String -> String
+importToModule s = innerText tags
+  where tags = parseTags s
+
 main :: IO ()
 main = shakeArgs shakeOptions do
-  compileModule <- addOracle \ (ModuleCompileQ f) -> do
+  -- I realise this is not how a Shakefile should be structured, but I got
+  -- bored trying to figure it out and this is good enough for now.
+  -- I should probably look into Development.Shake.Forward ...
+  compileModule <- addOracle \ (CompileDirectory (sourceDir, everything)) -> do
     librariesFile <- getEnv "AGDA_LIBRARIES_FILE"
+    sourceFiles <- filter (not . ("Everything*" ?==)) <$>
+      getDirectoryFiles sourceDir ["//*.agda"]
+    writeFile' everything (makeEverythingFile sourceFiles)
     traced "agda" do
-      sourceFile <- SourceFile <$> absolute f
+      root <- absolute sourceDir
+      sourceFile <- SourceFile <$> absolute everything
       runTCMTopPrettyErrors do
-        setCommandLineOptions defaultOptions
+        setCommandLineOptions' root defaultOptions
           { optOverrideLibrariesFile = librariesFile
           , optDefaultLibs = False
           }
@@ -76,33 +87,27 @@ main = shakeArgs shakeOptions do
         source <- parseSource sourceFile
         checkResult <- typeCheckMain TypeCheck source
         callBackend "HTML" IsMain checkResult
-
-  -- I realise this is not how a Shakefile should be structured, but I got
-  -- bored trying to figure it out and this is enough for my needs.
-  -- I should probably look into Development.Shake.Forward ...
-  siteDir </> "index.html" %> \ index -> do
-    agdaFiles <- getDirectoryFiles sourceDir ["//*.agda"]
-    (no, yes) <- partitionM loadPrimitives agdaFiles
-    writeFile' everythingLoadPrimitives (makeEverythingFile yes)
-    writeFile' everythingNoLoadPrimitives (makeEverythingFile no)
-    compileModule (ModuleCompileQ everythingLoadPrimitives)
-    compileModule (ModuleCompileQ everythingNoLoadPrimitives)
     moduleTemplate <- readFileText "module.html"
-    for_ agdaFiles \ agdaFile -> do
+    for_ sourceFiles \ sourceFile -> do
       -- Poor man's template engine
-      agda <- readFileText (htmlDir </> agdaFile -<.> "html")
-      writeFile' (siteDir </> agdaFile -<.> "html")
+      agda <- readFileText (htmlDir </> sourceFile -<.> "html")
+      writeFile' (siteDir </> sourceFile -<.> "html")
         $ T.unpack
         $ T.replace "@agda@" agda
-        $ T.replace "@moduleName@" (T.pack $ dropExtension agdaFile)
-        $ T.replace "@filename@" (T.pack agdaFile)
+        $ T.replace "@moduleName@" (T.pack $ dropExtension sourceFile)
+        $ T.replace "@path@" (T.pack $ sourceDir </> sourceFile)
         $ moduleTemplate
+
+  siteDir </> "index.html" %> \ index -> do
+    compileModule (CompileDirectory (sourceDir, everything))
+    compileModule (CompileDirectory (source1labDir, everything1lab))
     indexTemplate <- readFileText "index.html"
-    everything <- (<>) <$> readFileText (htmlDir </> "EverythingLoadPrimitives.html")
-                       <*> readFileText (htmlDir </> "EverythingNoLoadPrimitives.html")
+    everythingAgda <- (<>)
+      <$> readFileLines (htmlDir </> "Everything.html")
+      <*> readFileLines (htmlDir </> "Everything-1lab.html")
     writeFile' index
       $ T.unpack
-      $ T.replace "@agda@" everything
+      $ T.replace "@agda@" (T.pack $ unlines $ sortOn importToModule $ everythingAgda)
       $ indexTemplate
     copyFile' "style.css" (siteDir </> "style.css")
     copyFile' (htmlDir </> "highlight-hover.js") (siteDir </> "highlight-hover.js")

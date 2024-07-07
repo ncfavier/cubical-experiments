@@ -30,7 +30,7 @@ import Agda.Interaction.Options
 import Agda.Compiler.Backend (Backend(..), Backend'(..), Recompile(..))
 import Agda.Compiler.Common (IsMain(..), curIF)
 
-import Agda.Syntax.TopLevelModuleName (TopLevelModuleName, TopLevelModuleName' (TopLevelModuleName))
+import Agda.Syntax.TopLevelModuleName (TopLevelModuleName)
 
 import Agda.TypeChecking.Monad
   ( MonadDebug
@@ -39,9 +39,7 @@ import Agda.TypeChecking.Monad
   , reportS, stModuleToSource, useTC, TCM, getAgdaLibFiles
   )
 import Agda.Interaction.Library.Base (_libName, LibName)
-import Agda.Utils.FileName (AbsolutePath)
-import Agda.Utils.Maybe (listToMaybe)
-import Control.Monad ((<=<))
+import Agda.Utils.FileName
 
 -- | Options for HTML generation
 
@@ -51,6 +49,7 @@ data HtmlFlags = HtmlFlags
   , htmlFlagHighlight            :: HtmlHighlight
   , htmlFlagHighlightOccurrences :: Bool
   , htmlFlagCssFile              :: Maybe FilePath
+  , htmlFlagLibToURL             :: Map LibName (Maybe String)
   } deriving (Eq, Generic)
 
 instance NFData HtmlFlags
@@ -98,6 +97,7 @@ initialHtmlFlags = HtmlFlags
   -- performance problems
   , htmlFlagHighlightOccurrences = False
   , htmlFlagCssFile              = Nothing
+  , htmlFlagLibToURL             = mempty
   }
 
 htmlOptsOfFlags :: HtmlFlags -> HtmlOptions
@@ -157,19 +157,12 @@ htmlHighlightFlag opt    o = do
 runLogHtmlWithMonadDebug :: MonadDebug m => LogHtmlT m a -> m a
 runLogHtmlWithMonadDebug = runLogHtmlWith $ reportS "html" 1
 
-libToURL :: Map LibName String
-libToURL = Map.fromList
-  [ ("agda-builtins", "https://agda.github.io/cubical")
-  , ("cubical-0.7", "https://agda.github.io/cubical")
-  , ("1lab", "https://1lab.dev")
-  ]
-
 preCompileHtml
   :: HtmlFlags
   -> TCM HtmlCompileEnv
 preCompileHtml flags = do
   moduleToSource <- useTC stModuleToSource
-  moduleToURL <- Map.traverseMaybeWithKey f moduleToSource
+  modulesToURL <- Map.traverseMaybeWithKey moduleToURL moduleToSource
   runLogHtmlWithMonadDebug $ do
     logHtml $ unlines
       [ "Warning: HTML is currently generated for ALL files which can be"
@@ -177,10 +170,15 @@ preCompileHtml flags = do
       ]
     let opts = htmlOptsOfFlags flags
     prepareCommonDestinationAssets opts
-    return $ HtmlCompileEnv opts moduleToURL
+    return $ HtmlCompileEnv opts modulesToURL
   where
-    f :: TopLevelModuleName -> AbsolutePath -> TCM (Maybe String)
-    f m p = ((`Map.lookup` libToURL) <=< fmap _libName . listToMaybe) <$> getAgdaLibFiles p m
+    moduleToURL :: TopLevelModuleName -> AbsolutePath -> TCM (Maybe String)
+    moduleToURL m p = do
+      agdaLibs <- getAgdaLibFiles p m
+      case agdaLibs of
+        lib:_ | Just u <- libToURL Map.!? _libName lib -> pure u
+        _ -> fail ("Failed to find link target for file " <> filePath p)
+    libToURL = htmlFlagLibToURL flags
 
 preModuleHtml
   :: Applicative m

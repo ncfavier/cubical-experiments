@@ -12,11 +12,13 @@
     pkgs = nixpkgs.legacyPackages.${system};
     inherit (nixpkgs) lib;
     myAgda = pkgs.agda.withPackages (p: with p; [
+      standard-library
       cubical
       _1lab
     ]);
     AGDA_LIBRARIES_FILE = pkgs.writeText "libraries"
       (lib.concatMapStrings (p: "${p}/${p.libraryFile}\n") (with pkgs.agdaPackages; [
+        standard-library
         cubical
         _1lab
       ]));

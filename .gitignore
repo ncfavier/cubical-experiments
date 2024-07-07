@@ -5,3 +5,4 @@ MAlonzo/**
 .shake
 dist-newstyle
 _build
+Everything*.agda

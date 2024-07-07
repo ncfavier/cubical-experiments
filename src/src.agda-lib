@@ -1,0 +1,14 @@
+name: cubical-experiments
+include: .
+depend:
+    standard-library
+    cubical
+flags:
+    --cubical
+    --no-import-sorts
+    --postfix-projections
+    --allow-unsolved-metas
+    --rewriting
+    --guardedness
+    -W noInteractionMetaBoundaries
+    -W noUnsupportedIndexedMatch

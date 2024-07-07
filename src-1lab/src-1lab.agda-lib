@@ -1,7 +1,6 @@
 name: cubical-experiments
-include: src _build
+include: .
 depend:
-    cubical
     1lab
 flags:
     --cubical

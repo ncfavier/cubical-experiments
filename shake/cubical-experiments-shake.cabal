@@ -8,7 +8,7 @@ category:           Development
 build-type:         Simple
 
 executable cubical-experiments-shake
-    ghc-options: -Wall
+    ghc-options: -Wall -Wno-name-shadowing
     main-is:          Main.hs
     other-modules: HTML.Base,
                    HTML.Backend,
@@ -24,6 +24,7 @@ executable cubical-experiments-shake
                       regex-tdfa,
                       silently,
                       split,
+                      tagsoup,
                       text,
                       transformers,
                       uri-encode,
