@@ -4,7 +4,8 @@ open import Data.Product
 open import Data.Product.Properties
 open import Relation.Binary.PropositionalEquality
 
--- Naïve function extensionality implies function extensionality (HoTT book exercise 4.9)
+-- Naïve function extensionality implies function extensionality (HoTT book exercise 4.9).
+-- This is actually weaker as we assume ~ → ≡ for *dependent* functions.
 module NaiveFunext where
 
 private variable
@@ -30,13 +31,15 @@ module _
   where
 
   module _ (f : (a : A) → B a) where
-    r : ((a : A) → Σ _ (f a ≡_)) → Σ _ (f ~_)
-    r p = (λ a → p a .proj₁) , (λ a → p a .proj₂)
+    from : ((a : A) → Σ _ (f a ≡_)) → Σ _ (f ~_)
+    from p = (λ a → p a .proj₁) , (λ a → p a .proj₂)
+
+    to : Σ _ (f ~_) → ((a : A) → Σ _ (f a ≡_))
+    to g = λ a → g .proj₁ a , g .proj₂ a
+
+    -- Homotopies form an identity system, which is equivalent to function extensionality.
     htpy-is-contr : (g : Σ _ (f ~_)) → (f , λ _ → refl) ≡ g
-    htpy-is-contr _ = cong r (ext λ _ → singleton-is-contr)
-
-  ext' : f ~ g → f ≡ g
-  ext' {f = f} {g = g} h = cong proj₁ (htpy-is-contr f (g , h))
-
-  retract : (h : f ~ g) → happly (ext' h) ≡ h
-  retract {f = f} {g = g} h = cong-proj₂ (htpy-is-contr f (g , h))
+    htpy-is-contr g = cong from p
+      where
+        p : (λ a → f a , refl) ≡ to g
+        p = ext λ _ → singleton-is-contr
