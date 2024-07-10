@@ -1,27 +1,25 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
-    # onelab = {
-    #   url = "github:plt-amy/1lab";
-    #   flake = false;
-    # };
+    onelab = {
+      url = "github:ncfavier/1lab/agda-lib-nix";
+      flake = false;
+    };
   };
 
   outputs = inputs@{ self, nixpkgs, ... }: let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
     inherit (nixpkgs) lib;
-    myAgda = pkgs.agda.withPackages (p: with p; [
+    agdaLibs = p: with p; [
       standard-library
       cubical
-      _1lab
-    ]);
+      # _1lab
+      (import inputs.onelab { interactive = false; inherit system; })._1lab-agda
+    ];
+    myAgda = pkgs.agda.withPackages agdaLibs;
     AGDA_LIBRARIES_FILE = pkgs.writeText "libraries"
-      (lib.concatMapStrings (p: "${p}/${p.libraryFile}\n") (with pkgs.agdaPackages; [
-        standard-library
-        cubical
-        _1lab
-      ]));
+      (lib.concatMapStrings (p: "${p}/${p.libraryFile}\n") (agdaLibs pkgs.agdaPackages));
     shakefile = pkgs.haskellPackages.callCabal2nix "cubical-experiments-shake" ./shake {};
   in {
     devShells.${system}.shakefile = pkgs.haskellPackages.shellFor {

@@ -15,9 +15,27 @@
         "type": "indirect"
       }
     },
+    "onelab": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1720654093,
+        "narHash": "sha256-aFYzcWplq6x7dQC/y9JFMCXG6n1vjLf6heYrCd2UcZ8=",
+        "owner": "ncfavier",
+        "repo": "1lab",
+        "rev": "064d0068266fa7ecea64312a2328bf036f06d305",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ncfavier",
+        "ref": "agda-lib-nix",
+        "repo": "1lab",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "onelab": "onelab"
       }
     }
   },
