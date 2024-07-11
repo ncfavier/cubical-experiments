@@ -4,8 +4,9 @@ open import Cat.Functor.FullSubcategory
 open import Cat.Functor.Properties
 open import Cat.Instances.FinSets
 open import Cat.Instances.Sets
-open import Cat.Prelude
+open import Cat.Prelude hiding (absurd)
 open import Cat.Skeletal
+open import Data.Bool
 open import Data.Fin
 open import Data.Nat
 
@@ -20,6 +21,9 @@ finite-dimensional real vector spaces replaced with finite sets
 (the situation is exactly the same).
 -}
 module Skeletons where
+
+absurd : ∀ {ℓ} {A : Type ℓ} → ⊥ → A -- works around a bug
+absurd ()
 
 module Sets {ℓ} = Cat.Reasoning (Sets ℓ)
 
@@ -93,6 +97,32 @@ S→C-is-eso = Essential-inc-eso Fin→Sets
 However, this functor is *not* an equivalence of categories: in order
 to obtain a functor going the other way, we would have to choose an
 enumeration of every finite set in a coherent way. This is a form of
-global choice, which is just false (https://1lab.dev/1Lab.Counterexamples.GlobalChoice.html).
-TODO: prove this
+global choice, which is just false in homotopy type theory
+(https://1lab.dev/1Lab.Counterexamples.GlobalChoice.html).
 -}
+
+module _ (S≃C : is-equivalence S→C) where private
+  open is-equivalence S≃C renaming (F⁻¹ to C→S)
+  module C = Cat.Reasoning C
+
+  module _ (X : Set lzero) (e : ∥ ⌞ X ⌟ ≃ Fin 2 ∥) where
+    c : C.Ob
+    c = X , ((λ e → 2 , equiv→iso (e e⁻¹)) <$> e)
+
+    chosen : ⌞ X ⌟
+    chosen with C→S .F₀ c | counit.ε c | counit-iso c
+    ... | suc n | ε | _ = ε 0
+    ... | zero  | ε | ε-inv = absurd (case e of λ e →
+      zero≠suc (Fin-injective (iso→equiv (sub-iso→super-iso _ (C.invertible→iso ε ε-inv)) ∙e e)))
+
+  b : Bool
+  b = chosen (el! Bool) enumeration
+
+  swap : Bool ≡ Bool
+  swap = ua (not , not-is-equiv)
+
+  p : PathP (λ i → swap i) b b
+  p = ap₂ chosen (n-ua _) prop!
+
+  ¬S≃C : ⊥
+  ¬S≃C = not-no-fixed (from-pathp⁻ p)
