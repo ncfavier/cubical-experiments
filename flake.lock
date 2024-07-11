@@ -2,40 +2,22 @@
   "nodes": {
     "nixpkgs": {
       "locked": {
-        "lastModified": 1719690277,
-        "narHash": "sha256-0xSej1g7eP2kaUF+JQp8jdyNmpmCJKRpO12mKl/36Kc=",
+        "lastModified": 1720657034,
+        "narHash": "sha256-nPhbeFdyN8yn+EXmnPcBWisoypndtQbNIhSKmAinv3E=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "2741b4b489b55df32afac57bc4bfd220e8bf617e",
+        "rev": "212defe037698e18fc9521dfe451779a8979844c",
         "type": "github"
       },
       "original": {
         "id": "nixpkgs",
-        "ref": "nixos-unstable",
+        "ref": "nixpkgs-unstable",
         "type": "indirect"
-      }
-    },
-    "onelab": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1720654093,
-        "narHash": "sha256-aFYzcWplq6x7dQC/y9JFMCXG6n1vjLf6heYrCd2UcZ8=",
-        "owner": "ncfavier",
-        "repo": "1lab",
-        "rev": "064d0068266fa7ecea64312a2328bf036f06d305",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ncfavier",
-        "ref": "agda-lib-nix",
-        "repo": "1lab",
-        "type": "github"
       }
     },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs",
-        "onelab": "onelab"
+        "nixpkgs": "nixpkgs"
       }
     }
   },

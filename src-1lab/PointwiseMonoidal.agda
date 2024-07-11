@@ -13,6 +13,7 @@ open Precategory
 open Functor
 open _=>_
 
+-- ⚠️ WIP ⚠️
 module PointwiseMonoidal
   {o o′ ℓ ℓ′} (C : Precategory o ℓ) (D : Precategory o′ ℓ′)
   (M : Monoidal-category D)
@@ -37,13 +38,6 @@ Pointwise = pw where
   pw .triangle = {!   !}
   pw .pentagon = {!   !}
 
-what : (F : Functor C D) → (mon : Monoid-on Pointwise F) → (c : C .Ob) → Monoid-on M (F .F₀ c)
-what F mon c .Monoid-on.η = {!   !}
-what F mon c .Monoid-on.μ = {!   !}
-what F mon c .Monoid-on.μ-unitl = {!   !}
-what F mon c .Monoid-on.μ-unitr = {!   !}
-what F mon c .Monoid-on.μ-assoc = {!   !}
-
 MonCD→CMonD : Functor (∫ Mon[ Pointwise ]) (Cat[ C , ∫ Mon[ M ] ])
 MonCD→CMonD .F₀ (F , mon) .F₀ c = F .F₀ c , {!   !}
 MonCD→CMonD .F₀ (F , mon) .F₁ = {!   !}
@@ -53,5 +47,5 @@ MonCD→CMonD .F₁ = {!   !}
 MonCD→CMonD .F-id = {!   !}
 MonCD→CMonD .F-∘ = {!   !}
 
-theorem : ∫ Mon[ Pointwise ] ≡ Cat[ C , ∫ Mon[ M ] ]
-theorem = Precategory-path MonCD→CMonD {!   !}
+MonCD≡CMonD : ∫ Mon[ Pointwise ] ≡ Cat[ C , ∫ Mon[ M ] ]
+MonCD≡CMonD = Precategory-path MonCD→CMonD {!   !}

@@ -27,7 +27,7 @@ import Agda.Interaction.Options
     , OptDescr(..)
     , Flag
     )
-import Agda.Compiler.Backend (Backend(..), Backend'(..), Recompile(..))
+import Agda.Compiler.Backend
 import Agda.Compiler.Common (IsMain(..), curIF)
 
 import Agda.Syntax.TopLevelModuleName (TopLevelModuleName)

@@ -161,7 +161,7 @@ Tⁿ⁻¹ (suc n) = Susp-elim _
 θⁿ⁻¹ (suc n) = Susp-elim _
   id≃
   flipΣ≃
-  λ p → Σ-prop-pathp hlevel! $ Susp-ua→ $ happly $ sym $
+  λ p → Σ-prop-pathp! $ Susp-ua→ $ happly $ sym $
     let module θ = Equiv (θⁿ⁻¹ n p) in
     flipΣ ∘ map (θ.to ∘ flipΣ ∘ θ.from)       ≡⟨ flipΣ ∘⟨ map-∘ ⟩
     flipΣ ∘ map θ.to ∘ map (flipΣ ∘ θ.from)   ≡⟨ flipΣ ∘ map _ ∘⟨ map-∘ ⟩
@@ -278,7 +278,7 @@ Sⁿ-pointed≃unpointed n .fst = Sⁿ-class n
 Sⁿ-pointed≃unpointed n .snd = injective-surjective→is-equiv! (inj _ _) surj
   where
     inj : ∀ f g → Sⁿ-class n f ≡ Sⁿ-class n g → f ≡ g
-    inj = ∥-∥₀-elim₂ (λ _ _ → hlevel 2) λ (f , ptf) (g , ptg) f≡g →
+    inj = elim! λ f ptf g ptg f≡g →
       ∥-∥₀-path.from do
         f≡g ← ∥-∥₀-path.to f≡g
         J (λ g _ → ∀ ptg → ∥ (f , ptf) ≡ (g , ptg) ∥)

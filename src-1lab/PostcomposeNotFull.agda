@@ -108,4 +108,4 @@ module _ (assume : claim) where
   θ = fst <$> p*-is-full pθ
 
   contradiction : ⊥
-  contradiction = ∥-∥-rec! impossible θ
+  contradiction = rec! impossible θ

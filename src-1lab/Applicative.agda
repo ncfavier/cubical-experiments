@@ -3,6 +3,7 @@ open import 1Lab.Extensionality
 open import 1Lab.HLevel
 open import 1Lab.HLevel.Closure
 open import 1Lab.Path
+open import 1Lab.Reflection.HLevel
 open import 1Lab.Reflection.Record
 open import 1Lab.Type
 open import 1Lab.Type.Sigma
@@ -55,7 +56,7 @@ applicative-functor-path
   : ∀ {F : Type ℓ → Type ℓ} {app} {a b : applicative-functor F app}
   → (∀ {A B} (f : A → B) x → a ._<$>_ f x ≡ b ._<$>_ f x)
   → a ≡ b
-applicative-functor-path {F = F} {app = app} p = Iso.injective eqv (Σ-prop-path (λ _ → hlevel 1) (ext λ f → p f))
+applicative-functor-path {F = F} {app = app} p = Iso.injective eqv (Σ-prop-path! (ext λ f → p f))
   where instance
     F-sets : ∀ {x} → H-Level (F x) 2
     F-sets = hlevel-instance (app .applicative.sets)

@@ -9,6 +9,7 @@ open import Cat.Prelude
 
 open import Homotopy.Space.Delooping
 
+-- This now lives at https://1lab.dev/Algebra.Group.Concrete.Abelian.html#first-abelian-group-cohomology
 module FirstGroupCohomology where
 
 open Precategory
@@ -19,7 +20,7 @@ open Precategory
 -- Any two loops commute in the delooping of an abelian group.
 ab→square : ∀ {ℓ} {H : Group ℓ} (H-ab : is-commutative-group H)
           → {x : Deloop H} (p q : x ≡ x) → Square p q q p
-ab→square {H = H} H-ab {x} = Deloop-elim-prop H (λ x → (p q : x ≡ x) → Square p q q p) hlevel!
+ab→square {H = H} H-ab {x} = Deloop-elim-prop H (λ x → (p q : x ≡ x) → Square p q q p) (λ _ → hlevel 1)
   (λ p q → commutes→square (subst is-commutative-group (sym (π₁BG≡G H)) H-ab p q)) x
 
 module _ {ℓ} (G : Group ℓ) (H : Group ℓ) (H-ab : is-commutative-group H) where
@@ -34,7 +35,7 @@ module _ {ℓ} (G : Group ℓ) (H : Group ℓ) (H-ab : is-commutative-group H) w
   work : ∀ f → f base ≡ base → is-contr (fibre unpoint (inc f))
   work f ptf .centre = (f , ptf) , refl
   work f ptf .paths ((g , ptg) , g≡f) = Σ-prop-path! (Σ-pathp
-    (funext (Deloop-elim-set G _ hlevel! (ptf ∙ sym ptg) λ z → ∥-∥-rec!
+    (funext (Deloop-elim-set G _ (λ _ → hlevel 2) (ptf ∙ sym ptg) λ z → rec!
       (λ g≡f → J
         (λ g _ → ∀ ptg → Square (ap f (path z)) (ptf ∙ sym ptg) (ptf ∙ sym ptg) (ap g (path z)))
         (λ _ → ab→square H-ab _ _)
@@ -44,7 +45,7 @@ module _ {ℓ} (G : Group ℓ) (H : Group ℓ) (H-ab : is-commutative-group H) w
 
   unpoint-is-equiv : is-equiv unpoint
   unpoint-is-equiv .is-eqv = ∥-∥₀-elim (λ _ → hlevel 2)
-    λ f → ∥-∥-rec! (work f) (Deloop-is-connected (f base))
+    λ f → rec! (work f) (Deloop-is-connected (f base))
 
   unpoint≃ : H¹[G,H] ≃ (Deloop∙ G →∙ Deloop∙ H)
   unpoint≃ = (unpoint , unpoint-is-equiv) e⁻¹

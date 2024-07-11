@@ -33,7 +33,7 @@ module old {ℓ} (X : Type ℓ) (x : X) (hom : is-homogeneous X) where
 -- Simplification by David Wärn https://gist.github.com/dwarn/31d7002a5ca8df0443b31501056e357f
 module new {ℓ : Level} {X : Type ℓ} where
   fam : ∥ X ∥ → n-Type ℓ 0
-  fam = ∥-∥-rec! λ x → el (Singleton x) (contr _ Singleton-is-contr)
+  fam = rec! λ x → el (Singleton x) (contr _ Singleton-is-contr)
 
   magic : X → X
   magic = fst ∘ centre ∘ is-tr ∘ fam ∘ inc

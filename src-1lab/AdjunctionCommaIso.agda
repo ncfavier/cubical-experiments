@@ -33,21 +33,21 @@ module _
     L-adjunct F⊣G (b .map D.∘ F .F₁ (f .α)) ≡⟨ ap (L-adjunct F⊣G) (f .sq) ⟩
     L-adjunct F⊣G (f .β D.∘ a .map)         ≡⟨ L-adjunct-naturalr F⊣G _ _ ⟩
     G .F₁ (f .β) C.∘ L-adjunct F⊣G (a .map) ∎
-  to .F-id = ↓Hom-path _ _ refl refl
-  to .F-∘ _ _ = ↓Hom-path _ _ refl refl
+  to .F-id = trivial!
+  to .F-∘ _ _ = trivial!
 
   to-is-precat-iso : is-precat-iso to
   to-is-precat-iso .has-is-ff = is-iso→is-equiv is where
     is : ∀ {a b} → is-iso (to .F₁ {a} {b})
     is .inv f .α = f .α
     is .inv f .β = f .β
-    is {a} {b} .inv f .sq = Equiv.injective (_ , L-adjunct-is-equiv F⊣G) $
+    is {a} {b} .inv f .sq = Equiv.injective (adjunct-hom-equiv F⊣G) $
       L-adjunct F⊣G (b .map D.∘ F .F₁ (f .α)) ≡⟨ L-adjunct-naturall F⊣G _ _ ⟩
       L-adjunct F⊣G (b .map) C.∘ f .α         ≡⟨ f .sq ⟩
       G .F₁ (f .β) C.∘ L-adjunct F⊣G (a .map) ≡˘⟨ L-adjunct-naturalr F⊣G _ _ ⟩
       L-adjunct F⊣G (f .β D.∘ a .map)         ∎
-    is .rinv f = ↓Hom-path _ _ refl refl
-    is .linv f = ↓Hom-path _ _ refl refl
+    is .rinv f = trivial!
+    is .linv f = trivial!
   to-is-precat-iso .has-is-iso = is-iso→is-equiv is where
     is : is-iso (to .F₀)
     is .inv o .x = o .x
