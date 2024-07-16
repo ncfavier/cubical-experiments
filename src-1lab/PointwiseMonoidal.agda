@@ -1,6 +1,7 @@
 open import Cat.Prelude
 open import Cat.Functor.Base
 open import Cat.Functor.Compose
+open import Cat.Functor.Constant
 open import Cat.Functor.Equivalence.Path
 open import Cat.Monoidal.Base
 open import Cat.Monoidal.Diagram.Monoid

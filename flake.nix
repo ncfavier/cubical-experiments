@@ -16,12 +16,12 @@
           packageOverrides = hself: hsuper: {
             Agda = with self.haskell.lib.compose; lib.pipe hsuper.Agda [
               (overrideSrc {
-                version = "2.6.5";
+                version = "2.8.0";
                 src = pkgs.fetchFromGitHub {
                   owner = "agda";
                   repo = "agda";
-                  rev = "403ee4263e0f14222956e398d2610ae1a4f05467";
-                  hash = "sha256-laM5s1F6NnPmejSHQiTvjd0G+9TJTAUJv6sbsLSHKyc=";
+                  rev = "3a9d3893737b3a47c57e1c997f588931d592b0b6";
+                  hash = "sha256-2MI5jBIpVNscAFn3N3/jS+ZZIfRwmcJiTueE9QDZQxk=";
                 };
               })
               dontCheck
@@ -31,11 +31,21 @@
         };
         agdaPackages = super.agdaPackages.overrideScope (aself: asuper: {
           _1lab = asuper._1lab.overrideAttrs {
+            version = "unstable-50ea36cb";
             src = pkgs.fetchFromGitHub {
               owner = "plt-amy";
               repo = "1lab";
-              rev = "11f611363c01d24e8c46d5d99622066d04a32597";
-              hash = "sha256-DKwVAV1gPOVImunaJe+XIPQX+ehjG/RcOiYJmGKnnrQ=";
+              rev = "50ea36cb139cb5947303851cb177d3cf2aa3dfa8";
+              hash = "sha256-aEB4WQ096ynO5v5BmsPD4RR9AqIRPEiu1PQCqIAxm/A=";
+            };
+          };
+          standard-library = asuper.standard-library.overrideAttrs {
+            version = "2.1";
+            src = pkgs.fetchFromGitHub {
+              owner = "agda";
+              repo = "agda-stdlib";
+              rev = "96d44779bdd34e61624c2fe5ae161df223748238";
+              hash = "sha256-7i98epTFZ757ciBOcnV9/uNh9VEaXmdUGcKyidmiy8E=";
             };
           };
         });

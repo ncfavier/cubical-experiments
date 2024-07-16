@@ -4,7 +4,7 @@ open import Cat.Functor.FullSubcategory
 open import Cat.Functor.Properties
 open import Cat.Instances.FinSets
 open import Cat.Instances.Sets
-open import Cat.Prelude hiding (absurd)
+open import Cat.Prelude
 open import Cat.Skeletal
 open import Data.Bool
 open import Data.Fin
@@ -22,9 +22,6 @@ finite-dimensional real vector spaces replaced with finite sets
 -}
 module Skeletons where
 
-absurd : ∀ {ℓ} {A : Type ℓ} → ⊥ → A -- works around a bug
-absurd ()
-
 module Sets {ℓ} = Cat.Reasoning (Sets ℓ)
 
 {-
@@ -37,8 +34,7 @@ S : Precategory lzero lzero
 S = FinSets
 
 S-is-skeletal : is-skeletal S
-S-is-skeletal = path-from-has-iso→is-skeletal _ $ rec! λ is →
-  Fin-injective (iso→equiv (F-map-iso Fin→Sets is))
+S-is-skeletal = FinSets-is-skeletal
 
 {-
 In the role of the univalent category of finite-dimensional real vector
@@ -55,7 +51,7 @@ C : Precategory (lsuc lzero) lzero
 C = Essential-image Fin→Sets
 
 C-is-category : is-category C
-C-is-category = Restrict-is-category _ (λ _ → hlevel 1) Sets-is-category
+C-is-category = Essential-image-is-category Fin→Sets Sets-is-category
 
 {-
 Finally, if we remove the truncation (but do not change the morphisms),

@@ -44,7 +44,7 @@ myHtmlBackend = Backend htmlBackend'
     , htmlFlagHighlight = HighlightCode
     , htmlFlagLibToURL = Map.fromList
       [ ("agda-builtins", Just "https://agda.github.io/cubical")
-      , ("standard-library-2.0", Just "https://agda.github.io/agda-stdlib/v2.0")
+      , ("standard-library-2.1", Just "https://agda.github.io/agda-stdlib/experimental")
       , ("cubical-0.7", Just "https://agda.github.io/cubical")
       , ("1lab", Just "https://1lab.dev")
       , ("cubical-experiments", Nothing)
