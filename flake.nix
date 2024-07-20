@@ -1,8 +1,8 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixpkgs-unstable";
-    # onelab = {
-    #   url = "github:plt-amy/1lab";
+    # the1lab = {
+    #   url = "github:the1lab/1lab";
     #   flake = false;
     # };
   };
@@ -33,7 +33,7 @@
           _1lab = asuper._1lab.overrideAttrs {
             version = "unstable-50ea36cb";
             src = pkgs.fetchFromGitHub {
-              owner = "plt-amy";
+              owner = "the1lab";
               repo = "1lab";
               rev = "50ea36cb139cb5947303851cb177d3cf2aa3dfa8";
               hash = "sha256-aEB4WQ096ynO5v5BmsPD4RR9AqIRPEiu1PQCqIAxm/A=";
