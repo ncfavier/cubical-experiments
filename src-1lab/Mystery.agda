@@ -11,6 +11,10 @@ module Mystery where
 TNE : ∀ {ℓ} {P : Type ℓ} → ¬ ¬ ¬ P → ¬ P
 TNE h p = h λ k → k p
 
+case01 : ∀ {ℓ} {A : Type ℓ} → A → A → Nat → A
+case01 z s zero = z
+case01 z s (suc n) = s
+
 mystery MP DNS : Type
 
 mystery = (P : Nat → Ω) → (¬ ∀ n → ∣ P n ∣) → ∃ _ λ n → ¬ ∣ P n ∣
@@ -21,10 +25,6 @@ DNS = (P : Nat → Ω) → (∀ n → ¬ ¬ ∣ P n ∣) → ¬ ¬ ∀ n → ∣
 
 mystery→MP : mystery → MP
 mystery→MP m P _ = m P
-
-case01 : ∀ {ℓ} {A : Type ℓ} → A → A → Nat → A
-case01 z s zero = z
-case01 z s (suc n) = s
 
 mystery→WLEM : mystery → WLEM
 mystery→WLEM m P = case m (case01 P (¬Ω P)) (λ h → h 1 (h 0)) of λ where
@@ -38,3 +38,8 @@ MP+WLEM+DNS→mystery : MP × WLEM × DNS → mystery
 MP+WLEM+DNS→mystery (mp , wlem , dns) P h =
   mp (λ n → ¬Ω ¬Ω P n) (λ n → wlem (¬Ω P n)) (λ k → dns P k h)
   <&> Σ-map id TNE
+
+mystery≃MP+WLEM+DNS : mystery ≃ (MP × WLEM × DNS)
+mystery≃MP+WLEM+DNS = prop-ext!
+  ⟨ mystery→MP , ⟨ mystery→WLEM , mystery→DNS ⟩ ⟩
+  MP+WLEM+DNS→mystery
