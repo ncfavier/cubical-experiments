@@ -2,11 +2,11 @@
   "nodes": {
     "nixpkgs": {
       "locked": {
-        "lastModified": 1720657034,
-        "narHash": "sha256-nPhbeFdyN8yn+EXmnPcBWisoypndtQbNIhSKmAinv3E=",
+        "lastModified": 1736134818,
+        "narHash": "sha256-30sOEZ8CFK2nTTMdkhaNrfVlIi3rWTNV0Z5z+NmpFNI=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "212defe037698e18fc9521dfe451779a8979844c",
+        "rev": "3df3c47c19dc90fec35359e89ffb52b34d2b0e94",
         "type": "github"
       },
       "original": {
@@ -17,7 +17,25 @@
     },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "the1lab": "the1lab"
+      }
+    },
+    "the1lab": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1736209945,
+        "narHash": "sha256-VFgrWZbZV4hbUjV17Xca0jAIRYI1IkIH6bNcJDW8BzQ=",
+        "owner": "the1lab",
+        "repo": "1lab",
+        "rev": "436973b2de1d85e837edfc002f366c75b2cd3877",
+        "type": "github"
+      },
+      "original": {
+        "owner": "the1lab",
+        "ref": "aliao/list-sigma",
+        "repo": "1lab",
+        "type": "github"
       }
     }
   },

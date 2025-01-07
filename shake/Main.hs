@@ -1,6 +1,6 @@
 import Agda.Compiler.Backend hiding (getEnv)
-import Agda.Interaction.FindFile
 import Agda.Interaction.Imports
+import Agda.Interaction.Library.Base
 import Agda.Interaction.Options
 import Agda.TypeChecking.Errors
 import Agda.Utils.FileName
@@ -42,13 +42,15 @@ myHtmlBackend = Backend htmlBackend'
     , htmlFlagHighlightOccurrences = True
     , htmlFlagCssFile = Just "style.css"
     , htmlFlagHighlight = HighlightCode
-    , htmlFlagLibToURL = Map.fromList
-      [ ("agda-builtins", Just "https://agda.github.io/cubical")
-      , ("standard-library-2.1", Just "https://agda.github.io/agda-stdlib/experimental")
-      , ("cubical-0.7", Just "https://agda.github.io/cubical")
-      , ("1lab", Just "https://1lab.dev")
-      , ("cubical-experiments", Nothing)
-      ]
+    , htmlFlagLibToURL = \ (LibName lib version) ->
+      let v = intercalate "." (map show version) in
+      Map.lookup lib $ Map.fromList
+        [ ("agda-builtins", "https://agda.github.io/agda-stdlib/master")
+        , ("standard-library", "https://agda.github.io/agda-stdlib/v" <> v)
+        , ("cubical", "https://agda.github.io/cubical")
+        , ("1lab", "https://1lab.dev")
+        , ("cubical-experiments", "")
+        ]
     }
   }
 
@@ -77,13 +79,13 @@ main = shakeArgs shakeOptions do
     writeFile' everything (makeEverythingFile sourceFiles)
     traced "agda" do
       root <- absolute sourceDir
-      sourceFile <- SourceFile <$> absolute everything
       runTCMTopPrettyErrors do
         setCommandLineOptions' root defaultOptions
           { optOverrideLibrariesFile = librariesFile
           , optDefaultLibs = False
           }
         stBackends `setTCLens` [myHtmlBackend]
+        sourceFile <- srcFromPath =<< liftIO (absolute everything)
         source <- parseSource sourceFile
         checkResult <- typeCheckMain TypeCheck source
         callBackend "HTML" IsMain checkResult

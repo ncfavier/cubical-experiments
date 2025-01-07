@@ -18,7 +18,7 @@ monoidal-fibres
   → ∀ y → is-connected (Essential-fibre F y)
 monoidal-fibres {D = D} {F = F} ccat dcat eso full≅ y =
   case eso y of λ y′ Fy′≅y → is-connected∙→is-connected {X = _ , y′ , Fy′≅y} λ (x , Fx≅y) → do
-    (x≅y′ , eq) ← full≅ (Fx≅y ∘Iso (Fy′≅y Iso⁻¹))
+    (x≅y′ , eq) ← full≅ (Fy′≅y Iso⁻¹ ∘Iso Fx≅y)
     pure (Σ-pathp (ccat .to-path x≅y′)
       (≅-pathp _ _ (transport (λ i → PathP (λ j → Hom (F-map-path F ccat dcat x≅y′ (~ i) j) y) (Fx≅y .to) (Fy′≅y .to))
         (Hom-pathp-refll-iso (sym (ap from (Iso-swapl (sym eq))))))))

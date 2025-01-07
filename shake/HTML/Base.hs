@@ -22,7 +22,6 @@ import Control.Monad
 import Control.Monad.Trans ( MonadIO(..), lift )
 import Control.Monad.Trans.Reader ( ReaderT(runReaderT), ask )
 
-import Data.Function ( on )
 import Data.Foldable (toList, concatMap)
 import Data.Maybe
 import qualified Data.IntMap as IntMap
@@ -126,6 +125,7 @@ highlightOnlyCode HighlightAuto MdFileType    = True
 highlightOnlyCode HighlightAuto RstFileType   = True
 highlightOnlyCode HighlightAuto OrgFileType   = True
 highlightOnlyCode HighlightAuto TypstFileType = True
+highlightOnlyCode HighlightAuto TreeFileType  = True
 highlightOnlyCode HighlightAuto TexFileType   = False
 
 -- | Determine the generated file extension
@@ -140,6 +140,7 @@ highlightedFileExt hh ft
       TexFileType   -> "tex"
       OrgFileType   -> "org"
       TypstFileType -> "typ"
+      TreeFileType  -> "tree"
 
 -- | Options for HTML generation
 
@@ -320,6 +321,7 @@ code moduleToURL onlyCode fileType = mconcat . if onlyCode
          MdFileType    -> map mkMd . splitByMarkup
          AgdaFileType  -> map mkHtml
          OrgFileType   -> map mkOrg . splitByMarkup
+         TreeFileType  -> map mkMd . splitByMarkup
          -- Two useless cases, probably will never used by anyone
          TexFileType   -> map mkMd . splitByMarkup
          TypstFileType -> map mkMd . splitByMarkup

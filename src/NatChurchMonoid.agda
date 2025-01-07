@@ -3,7 +3,10 @@ open import Cubical.Algebra.Monoid.Instances.Nat
 open import Cubical.Algebra.Semigroup
 open import Cubical.Data.Nat
 open import Cubical.Data.Sigma
-open import Cubical.Foundations.Everything
+open import Cubical.Foundations.Prelude
+open import Cubical.Foundations.Function
+open import Cubical.Foundations.Isomorphism
+open import Cubical.Foundations.Structure
 
 -- ℕ ≃ (m : Monoid) → ⟨ m ⟩ → ⟨ m ⟩
 module NatChurchMonoid where

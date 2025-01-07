@@ -19,7 +19,7 @@ _∘'_ : ∀ {ℓ₁ ℓ₂ ℓ₃} {A : Type ℓ₁} {B : Type ℓ₂} {C : Typ
 f ∘' g = λ z → f (g z)
 
 record applicative (F : Type ℓ → Type ℓ) : Type (lsuc ℓ) where
-  infixl 5 _<*>_
+  infixl 8 _<*>_
   field
     sets : is-set (F A)
     pure : A → F A
@@ -35,7 +35,7 @@ record applicative (F : Type ℓ → Type ℓ) : Type (lsuc ℓ) where
 
 record applicative-functor (F : Type ℓ → Type ℓ) (app : applicative F) : Type (lsuc ℓ) where
   open applicative app
-  infixl 5 _<$>_
+  infixl 8 _<$>_
   field
     _<$>_ : (A → B) → F A → F B
     <$>-identity : ∀ {x : F A}

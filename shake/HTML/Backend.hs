@@ -17,6 +17,7 @@ import Control.DeepSeq
 import Control.Monad.Trans ( MonadIO )
 import Control.Monad.Except ( MonadError(throwError) )
 
+import Data.Maybe
 import qualified Data.Map as Map
 import Data.Map (Map)
 
@@ -25,19 +26,9 @@ import GHC.Generics (Generic)
 import Agda.Interaction.Options
     ( ArgDescr(ReqArg, NoArg)
     , OptDescr(..)
-    , Flag
     )
 import Agda.Compiler.Backend
-import Agda.Compiler.Common (IsMain(..), curIF)
-
-import Agda.Syntax.TopLevelModuleName (TopLevelModuleName)
-
-import Agda.TypeChecking.Monad
-  ( MonadDebug
-  , ReadTCState
-  , Definition
-  , reportS, stModuleToSource, useTC, TCM, getAgdaLibFiles
-  )
+import Agda.Compiler.Common (curIF)
 import Agda.Interaction.Library.Base (_libName, LibName)
 import Agda.Utils.FileName
 
@@ -49,8 +40,8 @@ data HtmlFlags = HtmlFlags
   , htmlFlagHighlight            :: HtmlHighlight
   , htmlFlagHighlightOccurrences :: Bool
   , htmlFlagCssFile              :: Maybe FilePath
-  , htmlFlagLibToURL             :: Map LibName (Maybe String)
-  } deriving (Eq, Generic)
+  , htmlFlagLibToURL             :: LibName -> Maybe String
+  } deriving (Generic)
 
 instance NFData HtmlFlags
 
@@ -86,6 +77,8 @@ htmlBackend' = Backend'
   -- will not have their definition site populated.
   , scopeCheckingSuffices = True
   , mayEraseType          = const $ return False
+  , backendInteractTop    = Nothing
+  , backendInteractHole   = Nothing
   }
 
 initialHtmlFlags :: HtmlFlags
@@ -97,7 +90,7 @@ initialHtmlFlags = HtmlFlags
   -- performance problems
   , htmlFlagHighlightOccurrences = False
   , htmlFlagCssFile              = Nothing
-  , htmlFlagLibToURL             = mempty
+  , htmlFlagLibToURL             = const Nothing
   }
 
 htmlOptsOfFlags :: HtmlFlags -> HtmlOptions
@@ -161,8 +154,8 @@ preCompileHtml
   :: HtmlFlags
   -> TCM HtmlCompileEnv
 preCompileHtml flags = do
-  moduleToSource <- useTC stModuleToSource
-  modulesToURL <- Map.traverseMaybeWithKey moduleToURL moduleToSource
+  moduleToSourceId <- useTC stModuleToSourceId
+  modulesToURL <- Map.traverseWithKey moduleToURL moduleToSourceId
   runLogHtmlWithMonadDebug $ do
     logHtml $ unlines
       [ "Warning: HTML is currently generated for ALL files which can be"
@@ -172,13 +165,13 @@ preCompileHtml flags = do
     prepareCommonDestinationAssets opts
     return $ HtmlCompileEnv opts modulesToURL
   where
-    moduleToURL :: TopLevelModuleName -> AbsolutePath -> TCM (Maybe String)
-    moduleToURL m p = do
+    moduleToURL :: TopLevelModuleName -> SourceFile -> TCM String
+    moduleToURL m sf = do
+      p <- srcFilePath sf
       agdaLibs <- getAgdaLibFiles p m
-      case agdaLibs of
-        lib:_ | Just u <- libToURL Map.!? _libName lib -> pure u
+      case mapMaybe (htmlFlagLibToURL flags . _libName) agdaLibs of
+        u:_ -> pure u
         _ -> fail ("Failed to find link target for file " <> filePath p)
-    libToURL = htmlFlagLibToURL flags
 
 preModuleHtml
   :: Applicative m

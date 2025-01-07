@@ -1,10 +1,10 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixpkgs-unstable";
-    # the1lab = {
-    #   url = "github:the1lab/1lab";
-    #   flake = false;
-    # };
+    the1lab = {
+      url = "github:the1lab/1lab/aliao/list-sigma";
+      flake = false;
+    };
   };
 
   outputs = inputs@{ self, nixpkgs, ... }: let
@@ -20,32 +20,39 @@
                 src = pkgs.fetchFromGitHub {
                   owner = "agda";
                   repo = "agda";
-                  rev = "3a9d3893737b3a47c57e1c997f588931d592b0b6";
-                  hash = "sha256-2MI5jBIpVNscAFn3N3/jS+ZZIfRwmcJiTueE9QDZQxk=";
+                  rev = "fix-want-interfaces";
+                  hash = "sha256-CsuksUyk5Y1X+zV6wyqbsJ6X7Ixw3pxT62lQXvoR8Nk=";
                 };
               })
+              disableLibraryProfiling
+              disableExecutableProfiling
               dontCheck
-              (addBuildDepend hself.pqueue)
+              dontHaddock
+              (addBuildDepends [ hself.enummapset hself.generic-data hself.nonempty-containers hself.process-extras hself.pqueue ])
             ];
           };
         };
         agdaPackages = super.agdaPackages.overrideScope (aself: asuper: {
           _1lab = asuper._1lab.overrideAttrs {
-            version = "unstable-50ea36cb";
+            version = "unstable-${inputs.the1lab.shortRev}";
+            src = inputs.the1lab;
+          };
+          cubical = asuper.cubical.overrideAttrs {
+            version = "unstable";
             src = pkgs.fetchFromGitHub {
-              owner = "the1lab";
-              repo = "1lab";
-              rev = "50ea36cb139cb5947303851cb177d3cf2aa3dfa8";
-              hash = "sha256-aEB4WQ096ynO5v5BmsPD4RR9AqIRPEiu1PQCqIAxm/A=";
+              owner = "agda";
+              repo = "cubical";
+              rev = "2f085f5675066c0e1708752587ae788c036ade87";
+              hash = "sha256-3pTaQGJPDh9G68RmQAZM7AgBQ8jcqvEUteQep0MsVhw=";
             };
           };
           standard-library = asuper.standard-library.overrideAttrs {
-            version = "2.1";
+            version = "2.1.1";
             src = pkgs.fetchFromGitHub {
               owner = "agda";
               repo = "agda-stdlib";
-              rev = "96d44779bdd34e61624c2fe5ae161df223748238";
-              hash = "sha256-7i98epTFZ757ciBOcnV9/uNh9VEaXmdUGcKyidmiy8E=";
+              rev = "v2.1.1";
+              hash = "sha256-4HfwNAkIhk1yC/oSxZ30xilzUM5/22nzbUSqTjcW5Ng=";
             };
           };
         });
@@ -53,34 +60,41 @@
     };
     inherit (nixpkgs) lib;
 
-    agdaLibs = p: with p; [
-      standard-library
-      cubical
-      _1lab
+    agdaLibs = libs: [
+      libs.standard-library
+      libs.cubical
+      libs._1lab
     ];
     agda = pkgs.agda.withPackages agdaLibs;
     AGDA_LIBRARIES_FILE = pkgs.agdaPackages.mkLibraryFile agdaLibs;
 
     shakefile = pkgs.haskellPackages.callCabal2nix "cubical-experiments-shake" ./shake {};
   in {
-    devShells.${system}.shakefile = pkgs.haskellPackages.shellFor {
-      packages = _: [ shakefile ];
-      inherit AGDA_LIBRARIES_FILE;
+    devShells.${system} = {
+      default = self.packages.${system}.default.overrideAttrs (old: {
+        nativeBuildInputs = old.nativeBuildInputs or [] ++ [ agda ];
+      });
+
+      shakefile = pkgs.haskellPackages.shellFor {
+        packages = _: [ shakefile ];
+        inherit AGDA_LIBRARIES_FILE;
+      };
     };
 
-    packages.${system}.default = pkgs.stdenv.mkDerivation {
-      name = "cubical-experiments";
-      src = self;
-      nativeBuildInputs = [
-        agda
-        shakefile
-      ];
-      inherit AGDA_LIBRARIES_FILE;
-      LC_ALL = "C.UTF-8";
-      buildPhase = ''
-        cubical-experiments-shake
-        mv _build/site "$out"
-      '';
+    packages.${system} = {
+      default = pkgs.stdenv.mkDerivation {
+        name = "cubical-experiments";
+        src = self;
+        nativeBuildInputs = [ shakefile ];
+        inherit AGDA_LIBRARIES_FILE;
+        LC_ALL = "C.UTF-8";
+        buildPhase = ''
+          cubical-experiments-shake
+          mv _build/site "$out"
+        '';
+      };
+
+      inherit shakefile;
     };
   };
 }
