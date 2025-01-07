@@ -20,8 +20,8 @@
                 src = pkgs.fetchFromGitHub {
                   owner = "agda";
                   repo = "agda";
-                  rev = "fix-want-interfaces";
-                  hash = "sha256-CsuksUyk5Y1X+zV6wyqbsJ6X7Ixw3pxT62lQXvoR8Nk=";
+                  rev = "3344ca8058ec35d08e13dfd188df19517023efb5";
+                  hash = "sha256-sZ6afNUBXZPjauLA0JGoFlCKlgcGrGhEJQvKYW2VhtY=";
                 };
               })
               disableLibraryProfiling
