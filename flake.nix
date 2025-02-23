@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixpkgs-unstable";
     the1lab = {
-      url = "github:the1lab/1lab/aliao/list-sigma";
+      url = "github:the1lab/1lab/ncf/misc";
       flake = false;
     };
   };

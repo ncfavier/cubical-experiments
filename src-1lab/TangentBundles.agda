@@ -140,7 +140,7 @@ Susp-ua→
 Susp-ua→ h i N = h N i
 Susp-ua→ h i S = h S i
 Susp-ua→ {g = g} h i (merid a j) = hcomp (∂ i ∨ ∂ j) λ where
-  k (k = i0) → g (merid (unglue (∂ i) a) j)
+  k (k = i0) → g (merid (unglue a) j)
   k (i = i0) → h (merid a j) (~ k)
   k (i = i1) → g (merid a j)
   k (j = i0) → h N (i ∨ ~ k)

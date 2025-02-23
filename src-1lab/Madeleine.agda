@@ -44,5 +44,5 @@ module _ (ε : axiom) where
       (s (r true) ≡? s (r false))
 
   lem : LEM
-  lem P = invmap (λ p → subst ∣_∣ (sym p) _) (λ p → Ω-ua _ (λ _ → p))
+  lem P = invmap (λ p → subst ∣_∣ (sym p) _) (λ p → Ω-ua (biimp _ (λ _ → p)))
     (discrete P ⊤Ω)
