@@ -163,7 +163,7 @@ module X (o h : Level) (X : Type) (e : ∥ X ≃ Fin 2 ∥) where
       --   → compose b m (λ i → {!   !}) ≡ compose b n {!   !}
 ```
 
-<details><summary>Some lemmas about paths in X-precategories</summary>
+<details><summary>Some lemmas about paths between X-precategories</summary>
 
 ```agda
   private
