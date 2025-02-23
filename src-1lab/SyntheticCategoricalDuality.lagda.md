@@ -1,3 +1,4 @@
+```agda
 open import 1Lab.Reflection.Regularity
 open import 1Lab.Path.Cartesian
 open import 1Lab.Reflection hiding (absurd)
@@ -7,9 +8,9 @@ open import Cat.Functor.Equivalence
 open import Cat.Prelude hiding (_[_↦_])
 
 open import Data.Fin
+```
 
-{-
-A synthetic account of categorical duality, based on an idea by David Wärn.
+A synthetic account of categorical duality, based on an idea by [**David Wärn**](https://dwarn.se/).
 
 The theory of categories has a fundamental S₂-symmetry that swaps "source"
 and "target", which can be expressed synthetically by defining categories
@@ -22,9 +23,14 @@ Then, instantiating this with a chosen 2-element type recovers usual
 categories, and the non-trivial symmetry of BS₂ automatically gives
 a symmetry of the type of categories which coincides with the usual
 categorical opposite.
--}
-module SyntheticCategoricalDuality where
 
+```agda
+module SyntheticCategoricalDuality where
+```
+
+<details><summary>Some auxiliary definitions</summary>
+
+```agda
 private variable
   ℓ o h : Level
   X O : Type ℓ
@@ -68,9 +74,17 @@ instance
 
 Bool-η : (b : Bool → O) → if (b true) (b false) ≡ b
 Bool-η b = ext (refl , refl)
+```
+</details>
 
+```agda
 -- We define X-(pre)categories relative to a 2-element type X.
 module X (o h : Level) (X : Type) (e : ∥ X ≃ Fin 2 ∥) where
+```
+
+<details><summary>Some more auxiliary definitions</summary>
+
+```agda
   private instance
     Finite-X : Finite X
     Finite-X = fin e
@@ -113,7 +127,10 @@ module X (o h : Level) (X : Type) (e : ∥ X ≃ Fin 2 ∥) where
     go : Dec (i ≡ᵢ x) → H (b [ i ↦ b x ])
     go (yes reflᵢ) = subst H (sym (assign-id b x)) f
     go (no i≠x) = subst H (sym (assign-const b x i (i≠x ⊙ Id≃path.from))) id
+```
+</details>
 
+```agda
   record XPrecategory : Type (lsuc (o ⊔ h)) where
     no-eta-equality
 
@@ -144,7 +161,11 @@ module X (o h : Level) (X : Type) (e : ∥ X ≃ Fin 2 ∥) where
       -- assoc
       --   : (b : X → Ob) (m n : Ob) (x : X)
       --   → compose b m (λ i → {!   !}) ≡ compose b n {!   !}
+```
 
+<details><summary>Some lemmas about paths in X-precategories</summary>
+
+```agda
   private
     hom-set : ∀ (C : XPrecategory) {b} → is-set (C .XPrecategory.Hom b)
     hom-set C = C .XPrecategory.Hom-set _
@@ -168,7 +189,10 @@ module X (o h : Level) (X : Type) (e : ∥ X ≃ Fin 2 ∥) where
   XPrecategory-path ob≡ hom≡ id≡ compose≡ = Iso.injective record-iso
     $ Σ-pathp ob≡ $ Σ-pathp hom≡ $ Σ-pathp prop!
     $ Σ-pathp id≡ $ Σ-pathp compose≡ $ hlevel 0 .centre
+```
+</details>
 
+```agda
 open X using (XPrecategory; XPrecategory-path)
 
 -- We recover categories by choosing a 2-element type X with designated
@@ -272,3 +296,4 @@ module _ {o h : Level} where
     Regularity.reduce!
     (to-pathp (ext λ b m f → Regularity.reduce!))
     where module C = Precategory C
+```

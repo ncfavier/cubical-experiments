@@ -275,8 +275,7 @@ page css
                       ]
       , if highlightOccurrences
         then Html5.script mempty !!
-          [ Attr.type_ "text/javascript"
-          , Attr.src $ stringValue occurrenceHighlightJsFile
+          [ Attr.src $ stringValue occurrenceHighlightJsFile
           ]
         else mempty
       ]

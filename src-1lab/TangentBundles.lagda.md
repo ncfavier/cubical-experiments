@@ -1,3 +1,4 @@
+```agda
 open import 1Lab.Path.Cartesian
 open import 1Lab.Path.Reasoning
 open import 1Lab.Prelude
@@ -20,13 +21,14 @@ open import Homotopy.Space.Sphere
 open import Homotopy.Base
 
 open import Meta.Idiom
+```
 
-{-
-A work-in-progress formalisation of the first part of https://www.youtube.com/watch?v=9T9B9XBjVpk
+A formalisation of the first part of [The tangent bundles of spheres](https://www.youtube.com/watch?v=9T9B9XBjVpk)
 by David Jaz Myers, Ulrik Buchholtz, Dan Christensen and Egbert Rijke, up until
-the proof of the hairy ball theorem (except I don't have enough homotopy theory yet
-to conclude that n-1 must be odd from flipΣⁿ ≡ id).
--}
+the proof of the hairy ball theorem (except I don't have enough homotopy theory
+to conclude that n-1 must be odd from `flipΣⁿ ≡ id`).
+
+```agda
 module TangentBundles where
 
 record Functorial (M : Effect) : Typeω where
@@ -315,3 +317,4 @@ hairy-ball zero sec = ∣-zero
 hairy-ball (suc n) sec with even-or-odd n | section→homotopy (suc n) sec
 ... | inl e | h = absurd (flip≠id n h)
 ... | inr o | _ = o
+```

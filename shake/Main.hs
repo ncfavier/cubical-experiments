@@ -21,6 +21,7 @@ import HTML.Backend
 import HTML.Base
 
 import Text.HTML.TagSoup
+import Text.Pandoc
 
 newtype CompileDirectory = CompileDirectory (FilePath, FilePath)
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
@@ -55,7 +56,7 @@ myHtmlBackend = Backend htmlBackend'
   }
 
 filenameToModule :: FilePath -> String
-filenameToModule f = dropExtension f
+filenameToModule f = dropExtensions f
 
 makeEverythingFile :: [FilePath] -> String
 makeEverythingFile = unlines . map (\ m -> "import " <> filenameToModule m)
@@ -75,7 +76,7 @@ main = shakeArgs shakeOptions do
   compileModule <- addOracle \ (CompileDirectory (sourceDir, everything)) -> do
     librariesFile <- getEnv "AGDA_LIBRARIES_FILE"
     sourceFiles <- filter (not . ("Everything*" ?==)) <$>
-      getDirectoryFiles sourceDir ["//*.agda"]
+      getDirectoryFiles sourceDir ["//*.agda", "//*.lagda.md"]
     writeFile' everything (makeEverythingFile sourceFiles)
     traced "agda" do
       root <- absolute sourceDir
@@ -91,11 +92,25 @@ main = shakeArgs shakeOptions do
         callBackend "HTML" IsMain checkResult
     moduleTemplate <- readFileText "module.html"
     for_ sourceFiles \ sourceFile -> do
-      agda <- readFileText (htmlDir </> sourceFile -<.> "html")
-      writeFile' (siteDir </> sourceFile -<.> "html")
+      let
+        htmlFile = dropExtensions sourceFile <.> "html"
+        literateFile = dropExtensions sourceFile <.> takeExtension sourceFile -- .lagda.md → .md
+      contents <- case takeExtensions sourceFile of
+        ".lagda.md" -> do
+          markdown <- readFileText (htmlDir </> literateFile)
+          traced "pandoc" $ runIOorExplode do
+            pandoc <- readMarkdown def {
+              readerExtensions = foldr enableExtension pandocExtensions [Ext_autolink_bare_uris]
+            } markdown
+            writeHtml5String def pandoc
+        ".agda" -> do
+          html <- readFileText (htmlDir </> htmlFile)
+          pure $ "<pre class=\"Agda\">" <> html <> "</pre>"
+        _ -> fail ("unknown extension for file " <> sourceFile)
+      writeFile' (siteDir </> htmlFile)
         $ T.unpack
-        $ T.replace "@agda@" agda
-        $ T.replace "@moduleName@" (T.pack $ dropExtension sourceFile)
+        $ T.replace "@contents@" contents
+        $ T.replace "@moduleName@" (T.pack $ filenameToModule sourceFile)
         $ T.replace "@path@" (T.pack $ sourceDir </> sourceFile)
         $ moduleTemplate
 
@@ -108,9 +123,10 @@ main = shakeArgs shakeOptions do
       <*> readFileLines (htmlDir </> "Everything-1lab.html")
     writeFile' index
       $ T.unpack
-      $ T.replace "@agda@" (T.pack $ unlines $ sortOn importToModule $ everythingAgda)
+      $ T.replace "@contents@" (T.pack $ unlines $ sortOn importToModule $ everythingAgda)
       $ indexTemplate
     copyFile' "style.css" (siteDir </> "style.css")
+    copyFile' "main.js" (siteDir </> "main.js")
     copyFile' (htmlDir </> "highlight-hover.js") (siteDir </> "highlight-hover.js")
 
   phony "all" do

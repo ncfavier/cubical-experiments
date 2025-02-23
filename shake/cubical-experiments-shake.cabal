@@ -21,6 +21,7 @@ executable cubical-experiments-shake
                       directory,
                       filepath,
                       mtl,
+                      pandoc,
                       regex-tdfa,
                       silently,
                       split,
