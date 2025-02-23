@@ -91,7 +91,6 @@ main = shakeArgs shakeOptions do
         callBackend "HTML" IsMain checkResult
     moduleTemplate <- readFileText "module.html"
     for_ sourceFiles \ sourceFile -> do
-      -- Poor man's template engine
       agda <- readFileText (htmlDir </> sourceFile -<.> "html")
       writeFile' (siteDir </> sourceFile -<.> "html")
         $ T.unpack

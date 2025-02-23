@@ -6,20 +6,21 @@
 
 :root {
   --background: #080709;
-  --foreground: #c8b8d4;
+  --foreground: white;
+  --accent: #b500ff;
   --comment: hsl(0, 0%, 60%);
-  --defined: #9bf1ff;
-  --literal: #f29bff;
+  --defined: #c8b8d4;
+  --literal: #cb4fff;
   --keyword: var(--foreground);
   --symbol: var(--foreground);
-  --bound: white;
+  --bound: var(--foreground);
   --module: var(--literal);
   --constructor: var(--literal);
 }
 
 ::selection {
-  background-color: #ff90fd;
-  color: var(--background);
+  background-color: var(--accent);
+  color: white;
 }
 
 body {
@@ -50,7 +51,7 @@ pre, code {
 .Agda .PrimitiveType { color: var(--defined) }
 .Agda .Pragma        { color: var(--keyword)   }
 .Agda .Operator      {}
-.Agda .Hole          { background: #076969 }
+.Agda .Hole          { background: #490764 }
 .Agda .Macro         { color: var(--defined) }
 
 /* NameKinds. */
