@@ -24,16 +24,15 @@
     "the1lab": {
       "flake": false,
       "locked": {
-        "lastModified": 1740322226,
-        "narHash": "sha256-8qj06mTbAzEouT5YzIgWhes5zNSZw6BvR/52uuCPH/E=",
+        "lastModified": 1740424473,
+        "narHash": "sha256-E933U8qGoCdxe97MxSkdDnifRMG3KfIcUyTs+N4iujU=",
         "owner": "the1lab",
         "repo": "1lab",
-        "rev": "0f7599b99bf33d26ef50cced4e3de7f546f4d614",
+        "rev": "1fee7e54ac6aaad34eedf1930d7be3f619c6199d",
         "type": "github"
       },
       "original": {
         "owner": "the1lab",
-        "ref": "ncf/misc",
         "repo": "1lab",
         "type": "github"
       }
