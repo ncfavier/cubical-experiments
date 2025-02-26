@@ -10,5 +10,6 @@ flags:
     --allow-unsolved-metas
     --rewriting
     --guardedness
+    --erasure
     -W noInteractionMetaBoundaries
     -W noUnsupportedIndexedMatch
