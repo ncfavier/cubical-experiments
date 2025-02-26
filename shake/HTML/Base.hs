@@ -438,5 +438,5 @@ code moduleToURL onlyCode fileType = mconcat . if onlyCode
         (++ "#" ++
          -- Use named anchors for external links as they should be more stable(?)
          Network.URI.Encode.encode (fromMaybe (show defPos) (aName <* u)))
-        (maybe id (</>) u $ Network.URI.Encode.encode $ modToFile m "html")
+        (maybe id (</>) u $ Network.URI.Encode.encode $ modToFile m "")
       where u = Map.lookup m moduleToURL
