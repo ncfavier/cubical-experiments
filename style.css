@@ -4,16 +4,23 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: JuliaMono;
+    font-weight: bold;
+    src: url("https://cdn.jsdelivr.net/gh/cormullion/juliamono/webfonts/JuliaMono-ExtraBold.woff2");
+    font-display: swap;
+}
+
 :root {
   --background: #080709;
   --foreground: white;
-  --accent: #b500ff;
+  --accent: #a54bff;
   --comment: hsl(0, 0%, 60%);
-  --defined: #c8b8d4;
-  --literal: #cb4fff;
+  --defined: var(--foreground);
+  --literal: var(--accent);
   --keyword: var(--foreground);
   --symbol: var(--foreground);
-  --bound: var(--foreground);
+  --bound: #c59efd;
   --module: var(--literal);
   --constructor: var(--literal);
 }
@@ -62,7 +69,7 @@ details[open] > summary::after {
 .Agda .Comment       { color: var(--comment) }
 .Agda .Background    { }
 .Agda .Markup        { }
-.Agda .Keyword       { color: var(--keyword) }
+.Agda .Keyword       { color: var(--keyword); font-weight: bold; }
 .Agda .String        { color: var(--literal) }
 .Agda .Number        { color: var(--literal) }
 .Agda .Symbol        { color: var(--symbol) }
