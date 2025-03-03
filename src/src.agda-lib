@@ -7,6 +7,7 @@ flags:
     --cubical
     --no-import-sorts
     --postfix-projections
+    --hidden-argument-puns
     --allow-unsolved-metas
     --rewriting
     --guardedness

@@ -2,7 +2,9 @@
 open import Agda.Primitive renaming (Set to Type; Setω to Typeω)
 open import Relation.Binary.PropositionalEquality hiding ([_])
 open import Axiom.Extensionality.Propositional
+open import Data.Product
 import Cubical.Foundations.Prelude as 🧊
+import Cubical.Foundations.CartesianKanOps as 🧊
 {-# BUILTIN REWRITE _≡_ #-}
 
 -- Investigating the erasure modality
@@ -51,7 +53,7 @@ module J₀→[]-cong where
     {-# REWRITE J₀-refl #-}
 
   []-cong : []-cong-type
-  []-cong {x = x} [ p ] = J₀ (λ y _ → [ x ] ≡ [ y ]) p refl
+  []-cong {x} [ p ] = J₀ (λ y _ → [ x ] ≡ [ y ]) p refl
 
   []-cong-refl
     : ∀ {a} {@0 A : Type a} {@0 x : A}
@@ -68,7 +70,7 @@ module []-cong→J₀ where
 
   --                        []-cong                        μ
   -- Erased (Paths (Erased A)) → Paths (Erased (Erased A)) → Paths (Erased A)
-  stable-≡ : ∀ {@0 A : Type a} {@0 x y : Erased A} → Erased (x ≡ y) → x ≡ y
+  stable-≡ : ∀ {@0 A : Type a} {x y : Erased A} → Erased (x ≡ y) → x ≡ y
   stable-≡ p = cong μ ([]-cong p)
 
   --         η               []-cong          erased-cong
@@ -103,11 +105,23 @@ module funext→[]-cong where
     funext : ∀ {a b} → Extensionality a b
 
   -- Direct proof, extracted from "Logical properties of a modality for erasure" (Danielsson 2019)
+
+  -- id : Paths (Erased A) → Paths (Erased A)
+  --    → {funext}
+  --      Paths (Paths (Erased A) → Erased A)
+  --    → {uniquely eliminating}
+  --      Paths (Erased (Paths (Erased A)) → Erased A)
+  --    → {apply p}
+  --      Paths (Erased A)
+  stable-≡ : ∀ {@0 A : Type a} {x y : Erased A} → Erased (x ≡ y) → x ≡ y
+  stable-≡ {A} {x} {y} [ p ] =
+    cong (λ (f : x ≡ y → Erased A) → [ f p .erased ])
+         (funext (λ (p : x ≡ y) → p))
+
+  --                  η                        stable-≡
+  -- Erased (Paths A) → Erased (Paths (Erased A)) → Paths (Erased A)
   []-cong : []-cong-type
-  []-cong {A = A} {x} {y} [ p ] =
-    cong (λ (f : [ x ] ≡ [ y ] → Erased (Erased A))
-          → [ f (cong η p) .erased .erased ])
-         (funext (cong η))
+  []-cong [ p ] = stable-≡ [ cong η p ]
 
   -- Alternative proof: ignoring some details, the types of funext and []-cong look very similar:
   --   funext  : Functions (Paths A) → Paths (Functions A)
@@ -145,7 +159,7 @@ module funext→[]-cong where
   --                                   funext
   -- Erased (Paths A) ≃ (None → Paths A) → Paths (None → A) ≃ Paths (Erased A)
   []-cong' : []-cong-type
-  []-cong' {A = A} {x} {y} p = cong ○→E x'≡y'
+  []-cong' {A} {x} {y} p = cong ○→E x'≡y'
     where
       x' y' : ○ E→○ [ A ]
       x' = E→○ [ x ]
@@ -154,14 +168,64 @@ module funext→[]-cong where
       x'≡y' : x' ≡ y'
       x'≡y' = funext (E→○ p)
 
-  -- The reflector into the corresponding *closed* subtopos is given by the join with None,
-  -- which is equivalent to the following HIT (we enter cubical land here):
+  -- The reflector into the corresponding *closed* subtopos of ○-connected types
+  -- is given by the join with None, which is equivalent to the following HIT
+  -- (we enter cubical land here):
   data ●_ (A : Type a) : Type a where
     -- At runtime, we only have A.
-    inc : A → ● A
+    ●-η : A → ● A
     -- At compile time, we also have an erased "cone" that glues all of A together,
     -- so that ● A is contractible.
     @0 none : ● A
-    @0 glue : (a : A) → inc a 🧊.≡ none
+    @0 glue : (a : A) → ●-η a 🧊.≡ none
 
-  -- TODO: make all this nonsense precise. realisability topoi?
+  @0 ●-○-connected : ∀ {A : Type a} → 🧊.isContr (● A)
+  ●-○-connected {A} = none 🧊., cone where
+    cone : (a : ● A) → none 🧊.≡ a
+    cone (●-η a) = 🧊.sym (glue a)
+    cone none = 🧊.refl
+    cone (glue a i) j = glue a (i 🧊.∨ 🧊.~ j)
+
+  -- Fracture and gluing
+
+  ○'-η : {A : Type a} → A → ○' A
+  ○'-η a _ = a
+
+  ●-map : {A : Type a} {B : Type b} → (A → B) → ● A → ● B
+  ●-map f (●-η a) = ●-η (f a)
+  ●-map f none = none
+  ●-map f (glue a i) = glue (f a) i
+
+  ○→●○ : {A : Type a} → ○' A → ● ○' A
+  ○→●○ = ●-η
+
+  ●→●○ : {A : Type a} → ● A → ● ○' A
+  ●→●○ = ●-map ○'-η
+
+  module _ (A : Type a) where
+    record Fracture : Type a where
+      field
+        op : ○' A
+        cl : ● A
+        agree : ○→●○ op 🧊.≡ ●→●○ cl
+
+    open Fracture
+
+    fracture : A → Fracture
+    fracture a .op = ○'-η a
+    fracture a .cl = ●-η a
+    fracture a .agree = 🧊.refl
+
+    gluing : Fracture → A
+    gluing f = go (f .op) (f .cl) (f .agree)
+      where
+        go : (op : ○' A) → (cl : ● A) → ○→●○ op 🧊.≡ ●→●○ cl → A
+        go op (●-η a) agree = a
+        go op none agree = op none
+        go op (glue a i) agree = {! 🧊.coei→0 (λ i → ●-η op 🧊.≡ glue (λ _ → a) i) i agree   !}
+
+    gluing-fracture : ∀ a → gluing (fracture a) ≡ a
+    gluing-fracture a = {!   !}
+
+    fracture-gluing : ∀ f → fracture (gluing f) ≡ f
+    fracture-gluing f = {!   !}
