@@ -14,7 +14,7 @@
 :root {
   --background: #080709;
   --foreground: white;
-  --accent: #a54bff;
+  --accent: #c15cff;
   --comment: hsl(0, 0%, 60%);
   --defined: var(--foreground);
   --literal: var(--accent);
