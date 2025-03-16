@@ -435,8 +435,10 @@ code moduleToURL onlyCode fileType = mconcat . if onlyCode
       -- If the definition site points to the top of a file,
       -- we drop the anchor part and just link to the file.
       applyUnless (defPos <= 1)
-        (++ "#" ++
-         -- Use named anchors for external links as they should be more stable(?)
-         Network.URI.Encode.encode (fromMaybe (show defPos) (aName <* u)))
+        (++ "#" ++ Network.URI.Encode.encode anchor)
         (maybe id (</>) u $ Network.URI.Encode.encode $ modToFile m "")
-      where u = Map.lookup m moduleToURL
+      where
+        u = Map.lookup m moduleToURL
+         -- Use named anchors for external links as they should be more stable(?)
+        anchor | Just a <- aName, Just u' <- u, u' /= "" = a
+               | otherwise = show defPos
