@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixpkgs-unstable";
     the1lab = {
-      url = "github:ncfavier/1lab/live";
+      url = "github:the1lab/1lab";
       flake = false;
     };
   };

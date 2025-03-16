@@ -292,8 +292,8 @@ module ●-ids {A : Type ℓ} {a : A} where
       λ p i → η● λ j → p (i ∧ j)
 
   ids : is-based-identity-system (η● a) code code-refl
-  ids .to-based-path {b} = decode b
-  ids .to-based-path-over {b} = decode-over b
+  ids .to-path {b} = decode b
+  ids .to-path-over {b} = decode-over b
 
 ●-lex : {a b : A} → ● (a ≡ b) ≃ (η● a ≡ η● b)
 ●-lex = based-identity-system-gives-path ●-ids.ids
