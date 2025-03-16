@@ -54,6 +54,7 @@ details {
 
 details > summary::after {
   content: '(click to unfold)';
+  color: var(--comment);
 }
 
 details[open] > summary::after {
