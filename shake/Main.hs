@@ -22,6 +22,7 @@ import HTML.Base
 
 import Text.HTML.TagSoup
 import Text.Pandoc
+import Text.Pandoc.Walk
 
 newtype CompileDirectory = CompileDirectory (FilePath, FilePath)
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
@@ -68,6 +69,12 @@ importToModule :: String -> String
 importToModule s = innerText tags
   where tags = parseTags s
 
+patchBlock :: Block -> Block
+-- Add anchor links next to headers
+patchBlock (Header i a@(ident, _, _) inl) | ident /= "" = Header i a $
+  inl ++ [Link ("", ["anchor"], [("aria-hidden", "true")]) [] ("#" <> ident, "")]
+patchBlock b = b
+
 main :: IO ()
 main = shakeArgs shakeOptions do
   -- I realise this is not how a Shakefile should be structured, but I got
@@ -102,6 +109,7 @@ main = shakeArgs shakeOptions do
             pandoc <- readMarkdown def {
               readerExtensions = foldr enableExtension pandocExtensions [Ext_autolink_bare_uris]
             } markdown
+            pandoc <- pure $ walk patchBlock pandoc
             writeHtml5String def pandoc
         ".agda" -> do
           html <- readFileText (htmlDir </> htmlFile)

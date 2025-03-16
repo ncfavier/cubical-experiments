@@ -61,6 +61,22 @@ details[open] > summary::after {
   content: '(click to fold)';
 }
 
+.anchor::before {
+  content: '🔗';
+  display: inline-block;
+  font-size: 80%;
+  margin-left: 10px;
+  opacity: 0.3;
+}
+
+.anchor:hover {
+  text-decoration: none;
+}
+
+h1:hover > .anchor::before, h2:hover > .anchor::before, h3:hover > .anchor::before, h4:hover > .anchor::before, h5:hover > .anchor::before, h6:hover > .anchor::before {
+  opacity: 1;
+}
+
 :any-link {
   text-decoration: none;
   color: var(--module);
