@@ -71,13 +71,15 @@ Erased→○ a compiling = a .erased
 ```
 
 Since Agda allows erased matches for the empty type, the empty type is
-modal, or in other words we are not not `Compiling`.
+modal; in other words, we are not not `Compiling`.
 
 ```agda
 ¬¬compiling : ¬ ¬ Compiling
 ¬¬compiling ¬c with ○→Erased ¬c
 ... | ()
 ```
+
+## Open and closed modalities
 
 The corresponding **closed** modality `●` is given by the join with `Compiling`,
 which is equivalent to the following higher inductive type.
@@ -100,6 +102,9 @@ unquoteDecl ●-elim = make-elim ●-elim (quote ●_)
   ps : (a : ● A) → a ≡ tip
   ps = ●-elim cone refl λ a i j → cone a (i ∨ j)
 ```
+
+The rest of this file investigates some properties of open and closed
+modalities that are not specific to the `Compiling` proposition we use here.
 
 <details>
 <summary>Some common definitions about higher modalities</summary>
