@@ -228,14 +228,14 @@ degree∙-map n f = {! the isomorphisms above should be compatible with suspensi
 
 degree∙-id : ∀ n → degree∙ n id∙ ≡ 1
 degree∙-id zero = refl
-degree∙-id (suc n) = ap (degree∙ (suc n)) p ·· degree∙-map n id∙ ·· degree∙-id n
+degree∙-id (suc n) = ap (degree∙ (suc n)) p ∙∙ degree∙-map n id∙ ∙∙ degree∙-id n
   where
     p : id∙ ≡ (map id , refl)
     p = Σ-pathp (sym map-id) refl
 
 degree∙-flipΣ : ∀ n → degree∙ n flipΣ∙ ≡ -1
 degree∙-flipΣ zero = refl -- neat.
-degree∙-flipΣ (suc n) = ap (degree∙ (suc n)) p ·· degree∙-map n flipΣ∙ ·· degree∙-flipΣ n
+degree∙-flipΣ (suc n) = ap (degree∙ (suc n)) p ∙∙ degree∙-map n flipΣ∙ ∙∙ degree∙-flipΣ n
   where
     p : flipΣ∙ ≡ (map flipΣ , refl)
     p = Σ-pathp (sym rotateΣ) (λ i j → merid N (~ i ∧ ~ j))
