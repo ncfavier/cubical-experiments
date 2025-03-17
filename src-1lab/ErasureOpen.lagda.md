@@ -206,7 +206,7 @@ module Modality
   η-connected : connected-map (η○ {A = A})
   η-connected a = contr
     (○-elim {P = fibre η○} (λ a → η○ (a , refl)) a)
-    (elim-modal (λ _ → ≡-modal reflection-modal) λ (a' , p) →
+    (elim-modal (λ _ → ○-≡-modal) λ (a' , p) →
       J (λ a p → ○-elim (λ x → η○ (x , refl)) a ≡ η○ (a' , p)) (○-elim-β a') p)
 
   ○Σ○≃○Σ : {B : A → Type ℓ} → (○ (Σ A λ a → ○ B a)) ≃ (○ (Σ A B))
@@ -360,7 +360,7 @@ a dependent path whose type is `●`-modal by standard results about higher moda
   fracture-modal : ●.modal-map fracture
   fracture-modal ((o , c) , p) = ●.modal-≃ e $
     ●.Σ-modal (○-connected→●-modal (○.η-connected _)) λ _ →
-      ●.PathP-modal $ ●.Σ-modal ●.reflection-modal λ _ → ●.≡-modal ●.reflection-modal
+      ●.PathP-modal $ ●.Σ-modal ●.reflection-modal λ _ → ●-≡-modal
     where
       e : fibre fracture ((o , c) , p)
         ≃ Σ (fibre η○ o) λ (a , q) →
