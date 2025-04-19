@@ -52,7 +52,7 @@ record Factorisation {o ℓ} (C : Precategory o ℓ) (A B : C .Ob) : Type (o ⊔
 -- functors C → D is free.
 module _
   {o o' ℓ} {C : Precategory o ℓ} {D : Precategory o' u}
-  (C-complete : is-complete u u C)
+  (C-complete : is-complete u lzero C)
   (C-category : is-category C)
   (F G : Functor C D)
   (let module C = Cat.Reasoning C) (let module D = Cat.Reasoning D)
@@ -63,7 +63,7 @@ module _
   natural : is-natural-transformation F G η
   natural A B f = G.introl refl ∙ z0≡z1 ∙ (D.refl⟩∘⟨ F.elimr refl) where
 
-    -- We define the two formal factorisations id ∘ f and f ∘ id
+    -- We define the two factorisations id ∘ f and f ∘ id.
     f,id : Factorisation C A B
     f,id = factor B f C.id
     id,f : Factorisation C A B
@@ -89,7 +89,7 @@ module _
       -- Since we only care about the cases where P is a proposition, we
       -- can just take the discrete or codiscrete category on P and adjoin a
       -- terminal object to get our diagram shape.
-      J : Precategory u u
+      J : Precategory u lzero
       J = Codisc' P ▹
 
       diagram : Functor J C
