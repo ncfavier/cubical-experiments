@@ -24,6 +24,10 @@
                   hash = "sha256-sZ6afNUBXZPjauLA0JGoFlCKlgcGrGhEJQvKYW2VhtY=";
                 };
               })
+              (appendPatch (pkgs.fetchpatch {
+                url = "https://patch-diff.githubusercontent.com/raw/agda/agda/pull/7816.patch";
+                hash = "sha256-HV8FlVxOWWwL5h81h//cijXtfIM9ARmy3cCA8UqkS0A=";
+              }))
               disableLibraryProfiling
               disableExecutableProfiling
               dontCheck
