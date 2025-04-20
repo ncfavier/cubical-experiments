@@ -112,7 +112,7 @@ module _ (S≃C : is-equivalence S→C) where private
       zero≠suc (Fin-injective (iso→equiv (sub-iso→super-iso _ (C.invertible→iso ε ε-inv)) ∙e e)))
 
   b : Bool
-  b = chosen (el! Bool) enumeration
+  b = chosen (el! Bool) (enumeration auto)
 
   swap : Bool ≡ Bool
   swap = ua (not , not-is-equiv)

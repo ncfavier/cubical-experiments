@@ -77,7 +77,7 @@ module _ (n-1 : Nat) where
         p : Σ Hats (λ hats → Σ Person (hats ✓_)) → Hats
         p = fst
         p-is-equiv : is-equiv p
-        p-is-equiv = Finite-surjection→equiv (inc only-one) p
+        p-is-equiv = {!   !} (inc only-one) p
           λ other → inc ((other , one-right other) , refl)
 
   open Strategy public

@@ -24,11 +24,11 @@
     "the1lab": {
       "flake": false,
       "locked": {
-        "lastModified": 1742215234,
-        "narHash": "sha256-zr6a/XeMnFm2XamD6pGgXnmz6VzjGtbveuige4iUn3s=",
+        "lastModified": 1745015887,
+        "narHash": "sha256-Pgk6hQgaEE4KOw8Qn/6qE/4pOxyZ266C3zvse1CaONc=",
         "owner": "the1lab",
         "repo": "1lab",
-        "rev": "28065239fb46d5bdfd9140f5fcd7e97fcedb206a",
+        "rev": "88a18adfdc6f7606ed1991591a183002e0bd1883",
         "type": "github"
       },
       "original": {
