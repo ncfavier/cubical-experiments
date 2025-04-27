@@ -29,7 +29,7 @@ the proof of the hairy ball theorem (except I don't have enough homotopy theory
 to conclude that n-1 must be odd from `flipΣⁿ ≡ id`).
 
 ```agda
-module TangentBundles where
+module TangentBundlesOfSpheres where
 
 record Functorial (M : Effect) : Typeω where
   private module M = Effect M
