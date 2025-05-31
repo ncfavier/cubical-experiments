@@ -5,7 +5,6 @@ depend:
 flags:
     --cubical
     --no-load-primitives
-    --no-import-sorts
     --postfix-projections
     --allow-unsolved-metas
     --rewriting
