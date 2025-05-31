@@ -66,7 +66,7 @@ Type↓ ℓ = Type∙ ℓ , Type ℓ , fst
 Type↓-fibre : ∀ {ℓ} (A : Type ℓ) → A ≃ Pullback {B = Lift ℓ ⊤} {C = Type∙ ℓ} (λ _ → A) fst
 Type↓-fibre A = Iso→Equiv λ where
   .fst a → pb _ (A , a) refl
-  .snd .is-iso.inv (pb _ (A' , a) eq) → transport (sym eq) a
+  .snd .is-iso.from (pb _ (A' , a) eq) → transport (sym eq) a
   .snd .is-iso.linv → transport-refl
   .snd .is-iso.rinv (pb _ (A' , a) eq) → pb-path refl (sym (Σ-path (sym eq) refl)) λ i j → eq (i ∧ j)
 
@@ -85,7 +85,7 @@ postulate
 lemma : ∀ {ℓ} (A : Type ℓ) → (! A ⇒ Type↓ ℓ) ≃ Σ (Type ℓ) (λ B → A ≃ B)
 lemma {ℓ} A = Iso→Equiv λ where
   .fst (ty , e , _) → ty _ , e ∙e Type↓-fibre (ty _) e⁻¹
-  .snd .is-iso.inv (B , e) → (λ _ → B) , e ∙e Type↓-fibre B , refl
+  .snd .is-iso.from (B , e) → (λ _ → B) , e ∙e Type↓-fibre B , refl
   .snd .is-iso.linv (ty , e , _) → Σ-pathp refl (Σ-pathp (Σ-prop-path is-equiv-is-prop
     (funext λ _ → Equiv.ε (Type↓-fibre (ty _)) _)) refl)
   .snd .is-iso.rinv (B , e) → Σ-pathp refl (Σ-prop-path is-equiv-is-prop

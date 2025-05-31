@@ -59,8 +59,8 @@ module _ (n-1 : Nat) where
       where
         probability : ∀ i → Iso (Σ Hats (_✓ i)) (Fin n-1 → Hat)
         probability i .fst (hats , _) = delete hats i
-        probability i .snd .inv other .fst = other [ i ≔ guess i other ]
-        probability i .snd .inv other .snd =
+        probability i .snd .from other .fst = other [ i ≔ guess i other ]
+        probability i .snd .from other .snd =
           guess i ⌜ delete (other [ i ≔ guess i other ]) i ⌝ ≡⟨ ap! (funext (delete-insert _ i _)) ⟩
           guess i other                                      ≡˘⟨ insert-lookup _ i _ ⟩
           (other [ i ≔ guess i other ]) i                    ∎
@@ -125,7 +125,7 @@ module _ (n-1 : Nat) where
                 → is-equiv (λ x → mul (xs [ i ≔ x ]))
       mul-equiv i xs with fin-view i
       mul-equiv _ xs | zero = ⋆-equivr _
-      mul-equiv {suc m} _ xs | suc i = ∙-is-equiv (mul-equiv i (xs ∘ fsuc)) (⋆-equivl _)
+      mul-equiv {suc m} _ xs | suc i = ∘-is-equiv (mul-equiv i (xs ∘ fsuc)) (⋆-equivl _)
 
   group→strategy : Group-on (Fin n) → Strategy
   group→strategy = latin→strategy ∘ group→latin

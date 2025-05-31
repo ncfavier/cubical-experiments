@@ -2,17 +2,18 @@
   "nodes": {
     "nixpkgs": {
       "locked": {
-        "lastModified": 1736134818,
-        "narHash": "sha256-30sOEZ8CFK2nTTMdkhaNrfVlIi3rWTNV0Z5z+NmpFNI=",
-        "owner": "NixOS",
+        "lastModified": 1745872597,
+        "narHash": "sha256-o7ROtc5q4ISWsF+nuENjeITzaZsaXO7OiNOLg9+h88k=",
+        "owner": "ncfavier",
         "repo": "nixpkgs",
-        "rev": "3df3c47c19dc90fec35359e89ffb52b34d2b0e94",
+        "rev": "029495dc0dcfb45f51db8ccb4a9ed63eed4a94f4",
         "type": "github"
       },
       "original": {
-        "id": "nixpkgs",
-        "ref": "nixpkgs-unstable",
-        "type": "indirect"
+        "owner": "ncfavier",
+        "ref": "agda-bump",
+        "repo": "nixpkgs",
+        "type": "github"
       }
     },
     "root": {
@@ -24,11 +25,11 @@
     "the1lab": {
       "flake": false,
       "locked": {
-        "lastModified": 1742215234,
-        "narHash": "sha256-zr6a/XeMnFm2XamD6pGgXnmz6VzjGtbveuige4iUn3s=",
+        "lastModified": 1748348495,
+        "narHash": "sha256-SGeo5WjW6qCMb0YFWdelXEK/6h0tLPwgGJglYGHxa6E=",
         "owner": "the1lab",
         "repo": "1lab",
-        "rev": "28065239fb46d5bdfd9140f5fcd7e97fcedb206a",
+        "rev": "aafcd46dd4d4cff3bfff260a2decb067d61531ad",
         "type": "github"
       },
       "original": {

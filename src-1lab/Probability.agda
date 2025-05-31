@@ -18,11 +18,7 @@ Child = Fin 2
 Sample = Child → Day × Gender
 
 count : (A : Sample → Type) → ⦃ ∀ {s} → Finite (A s) ⦄ → Nat
-count A = cardinality {T = Σ Sample A}
-
-instance
-  Finite-∥-∥ : ∀ {ℓ} {A : Type ℓ} → ⦃ Dec A ⦄ → Finite ∥ A ∥
-  Finite-∥-∥ = fin (inc (Dec→Fin (hlevel 1) auto .snd e⁻¹))
+count A = cardinality {A = Σ Sample A}
 
 condition : Sample → Type
 condition s = ∃[ i ∈ Child ] s i ≡ (1 , 1)

@@ -156,7 +156,7 @@ module Modality
 
   map-≃ : A ≃ B → (○ A) ≃ (○ B)
   map-≃ e = map (e .fst) , is-iso→is-equiv λ where
-    .is-iso.inv → map (Equiv.from e)
+    .is-iso.from → map (Equiv.from e)
     .is-iso.rinv → elim-modal (λ _ → ○-≡-modal) λ b →
       ap (map (e .fst)) (○-elim-β b) ∙ ○-elim-β (Equiv.from e b) ∙ ap η○ (Equiv.ε e b)
     .is-iso.linv → elim-modal (λ _ → ○-≡-modal) λ a →
@@ -189,7 +189,7 @@ module Modality
 
   reflection-modal : modal (○ A)
   reflection-modal = is-iso→is-equiv λ where
-    .is-iso.inv → ○-elim id
+    .is-iso.from → ○-elim id
     .is-iso.rinv → elim-modal (λ _ → ○-≡-modal) λ a → ap η○ (○-elim-β a)
     .is-iso.linv → ○-elim-β
 
@@ -217,7 +217,7 @@ module Modality
   ○Σ○≃○Σ : {B : A → Type ℓ} → (○ (Σ A λ a → ○ B a)) ≃ (○ (Σ A B))
   ○Σ○≃○Σ .fst = ○-elim λ (a , b) → map (a ,_) b
   ○Σ○≃○Σ .snd = is-iso→is-equiv λ where
-    .is-iso.inv → map (Σ-map₂ η○)
+    .is-iso.from → map (Σ-map₂ η○)
     .is-iso.rinv → elim-modal (λ _ → ○-≡-modal) λ (a , b) →
       ap (○-elim _) (○-elim-β (a , b)) ∙ ○-elim-β (a , η○ b) ∙ ○-elim-β b
     .is-iso.linv → elim-modal (λ _ → ○-≡-modal) λ (a , b) →
@@ -253,7 +253,7 @@ for both of them.
 
 ○-≡-modal : {x y : ○ A} → is-equiv (η○ {A = x ≡ y})
 ○-≡-modal = is-iso→is-equiv λ where
-  .is-iso.inv p i compiling → p compiling i compiling
+  .is-iso.from p i compiling → p compiling i compiling
   .is-iso.rinv p i compiling j compiling → p compiling j compiling
   .is-iso.linv p i j compiling → p j compiling
 
@@ -264,7 +264,7 @@ for both of them.
 
 ●-≡-modal : {x y : ● A} → is-equiv (η● {A = x ≡ y})
 ●-≡-modal = is-iso→is-equiv λ where
-  .is-iso.inv → ●-elim id (is-contr→is-prop ●-contr _ _)
+  .is-iso.from → ●-elim id (is-contr→is-prop ●-contr _ _)
     λ p → is-contr→is-set ●-contr _ _ _ _
   .is-iso.rinv → ●-elim (λ _ → refl) (sym (●-contr .paths _))
     λ p → is-set→squarep (λ _ _ → is-contr→is-set ●-contr) _ _ _ _
@@ -370,7 +370,7 @@ a dependent path whose type is `●`-modal by standard results about higher moda
       e : fibre fracture ((o , c) , p)
         ≃ Σ (fibre η○ o) λ (a , q) →
           PathP (λ i → Σ (● A) λ c → ○→●○ (q i) ≡ ●→●○ c) (η● a , refl) (c , p)
-      e = Σ-ap-snd (λ _ → ap-equiv (Σ-assoc e⁻¹) ∙e Iso→Equiv Σ-pathp-iso e⁻¹) ∙e Σ-assoc
+      e = Σ-ap-snd (λ _ → ap-equiv (Σ-assoc e⁻¹) ∙e Σ-pathp≃ e⁻¹) ∙e Σ-assoc
 ```
 
 Almost symmetrically, for the connected part, we rearrange the fibre
@@ -388,7 +388,7 @@ is `●`-connected because `●` is lex.
       e : fibre fracture ((o , c) , p)
         ≃ Σ (fibre η● c) λ (a , q) →
           PathP (λ i → Σ (○ A) λ o → ○→●○ o ≡ ●→●○ (q i)) (η○ a , refl) (o , p)
-      e = Σ-ap-snd (λ _ → ap-equiv (Σ-ap-fst ×-swap ∙e Σ-assoc e⁻¹) ∙e Iso→Equiv Σ-pathp-iso e⁻¹) ∙e Σ-assoc
+      e = Σ-ap-snd (λ _ → ap-equiv (Σ-ap-fst ×-swap ∙e Σ-assoc e⁻¹) ∙e Σ-pathp≃ e⁻¹) ∙e Σ-assoc
 
   fracture-is-equiv : is-equiv fracture
   fracture-is-equiv = ●.modal+connected→equiv fracture-modal fracture-connected

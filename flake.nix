@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:ncfavier/nixpkgs/agda-bump";
     the1lab = {
       url = "github:the1lab/1lab";
       flake = false;
@@ -12,57 +12,14 @@
     pkgs = import nixpkgs {
       inherit system;
       overlays = [ (self: super: {
-        haskell = super.haskell // {
-          packageOverrides = hself: hsuper: {
-            Agda = with self.haskell.lib.compose; lib.pipe hsuper.Agda [
-              (overrideSrc {
-                version = "2.8.0";
-                src = pkgs.fetchFromGitHub {
-                  owner = "agda";
-                  repo = "agda";
-                  rev = "3344ca8058ec35d08e13dfd188df19517023efb5";
-                  hash = "sha256-sZ6afNUBXZPjauLA0JGoFlCKlgcGrGhEJQvKYW2VhtY=";
-                };
-              })
-              (appendPatch (pkgs.fetchpatch {
-                url = "https://patch-diff.githubusercontent.com/raw/agda/agda/pull/7816.patch";
-                hash = "sha256-HV8FlVxOWWwL5h81h//cijXtfIM9ARmy3cCA8UqkS0A=";
-              }))
-              disableLibraryProfiling
-              disableExecutableProfiling
-              dontCheck
-              dontHaddock
-              (addBuildDepends [ hself.enummapset hself.generic-data hself.nonempty-containers hself.process-extras hself.pqueue ])
-            ];
-          };
-        };
         agdaPackages = super.agdaPackages.overrideScope (aself: asuper: {
           _1lab = asuper._1lab.overrideAttrs {
             version = "unstable-${inputs.the1lab.shortRev}";
             src = inputs.the1lab;
           };
-          cubical = asuper.cubical.overrideAttrs {
-            version = "unstable";
-            src = pkgs.fetchFromGitHub {
-              owner = "agda";
-              repo = "cubical";
-              rev = "2f085f5675066c0e1708752587ae788c036ade87";
-              hash = "sha256-3pTaQGJPDh9G68RmQAZM7AgBQ8jcqvEUteQep0MsVhw=";
-            };
-          };
-          standard-library = asuper.standard-library.overrideAttrs {
-            version = "2.1.1";
-            src = pkgs.fetchFromGitHub {
-              owner = "agda";
-              repo = "agda-stdlib";
-              rev = "v2.1.1";
-              hash = "sha256-4HfwNAkIhk1yC/oSxZ30xilzUM5/22nzbUSqTjcW5Ng=";
-            };
-          };
         });
       }) ];
     };
-    inherit (nixpkgs) lib;
 
     agdaLibs = libs: [
       libs.standard-library
@@ -71,6 +28,7 @@
     ];
     agda = pkgs.agda.withPackages agdaLibs;
     AGDA_LIBRARIES_FILE = pkgs.agdaPackages.mkLibraryFile agdaLibs;
+    Agda_datadir = "${pkgs.haskellPackages.Agda.data}/share/agda";
 
     shakefile = pkgs.haskellPackages.callCabal2nix "cubical-experiments-shake" ./shake {};
   in {
@@ -81,7 +39,7 @@
 
       shakefile = pkgs.haskellPackages.shellFor {
         packages = _: [ shakefile ];
-        inherit AGDA_LIBRARIES_FILE;
+        inherit AGDA_LIBRARIES_FILE Agda_datadir;
       };
     };
 
@@ -90,7 +48,7 @@
         name = "cubical-experiments";
         src = self;
         nativeBuildInputs = [ shakefile ];
-        inherit AGDA_LIBRARIES_FILE;
+        inherit AGDA_LIBRARIES_FILE Agda_datadir;
         LC_ALL = "C.UTF-8";
         buildPhase = ''
           cubical-experiments-shake

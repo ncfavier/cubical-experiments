@@ -43,7 +43,7 @@ record Functorial (M : Effect) : Typeω where
 
   map-iso : ∀ {ℓ ℓ'} {A : Type ℓ} {B : Type ℓ'}
     → (e : A ≃ B) → is-iso (map (Equiv.to e))
-  map-iso e .is-iso.inv = map (Equiv.from e)
+  map-iso e .is-iso.from = map (Equiv.from e)
   map-iso e .is-iso.rinv mb =
     map (Equiv.to e) (map (Equiv.from e) mb) ≡˘⟨ map-∘ $ₚ mb ⟩
     map ⌜ Equiv.to e ∘ Equiv.from e ⌝ mb     ≡⟨ ap! (funext (Equiv.ε e)) ⟩

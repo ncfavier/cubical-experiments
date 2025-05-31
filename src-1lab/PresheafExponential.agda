@@ -1,7 +1,8 @@
 open import Cat.Prelude
 open import Cat.Functor.Base
 open import Cat.Functor.Naturality
-open import Cat.CartesianClosed.Instances.PSh
+open import Cat.Instances.Presheaf.Limits
+open import Cat.Instances.Presheaf.Exponentials
 open import Cat.Diagram.Exponential
 open import Cat.Diagram.Product
 import Cat.Reasoning
@@ -10,8 +11,8 @@ module PresheafExponential {ℓ} {C : Precategory ℓ ℓ} where
 
 module C = Cat.Reasoning C
 module PSh = Cat.Reasoning (PSh ℓ C)
-open Binary-products (PSh ℓ C) (PSh-products {C = C})
-open Cartesian-closed (PSh-closed {C = C})
+open Binary-products (PSh ℓ C) (PSh-products _ C)
+open Cartesian-closed (PSh-closed C)
 
 open Functor
 open _=>_

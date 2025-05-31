@@ -79,7 +79,7 @@ Bool-η b = ext (refl , refl)
 
 ```agda
 -- We define X-(pre)categories relative to a 2-element type X.
-module X (o h : Level) (X : Type) (e : ∥ X ≃ Fin 2 ∥) where
+module X (o h : Level) (X : Type) (e : ∥ X ≃ Bool ∥) where
 ```
 
 <details><summary>Some more auxiliary definitions</summary>
@@ -87,13 +87,13 @@ module X (o h : Level) (X : Type) (e : ∥ X ≃ Fin 2 ∥) where
 ```agda
   private instance
     Finite-X : Finite X
-    Finite-X = fin e
+    Finite-X = ⦇ Equiv→listing (e <&> _e⁻¹) auto ⦈
 
     Discrete-X : Discrete X
     Discrete-X = Finite→Discrete
 
     H-Level-X : H-Level X 2
-    H-Level-X = Finite.Finite→H-Level Finite-X
+    H-Level-X = Finite→H-Level
 
   _[_↦_] : (X → O) → X → O → X → O
   _[_↦_] b x m i = ifᵈ i ≡? x then m else b i
@@ -113,7 +113,7 @@ module X (o h : Level) (X : Type) (e : ∥ X ≃ Fin 2 ∥) where
     ... | no k≠j = ap b $ ∥-∥-out! do
       e ← e
       pure (subst (λ X → {x y z : X} → x ≠ y → y ≠ z → x ≡ z)
-         (ua (Bool≃Fin2 ∙e e e⁻¹)) excluded-middle k≠j j≠i)
+         (ua (e e⁻¹)) excluded-middle k≠j j≠i)
 
   degenerate
     : (H : (X → O) → Type h) (b : X → O) (x : X) (f : H b) (id : H (λ _ → b x)) (i : X)
@@ -197,12 +197,12 @@ open X using (XPrecategory; XPrecategory-path)
 
 -- We recover categories by choosing a 2-element type X with designated
 -- source and target elements. Here we pick the booleans with
--- true = source and false = target.
+-- the convention that true = source and false = target.
 2Precategory : (o h : Level) → Type (lsuc (o ⊔ h))
-2Precategory o h = XPrecategory o h Bool enumeration
+2Precategory o h = XPrecategory o h Bool (inc id≃)
 
 module _ {o h : Level} where
-  module B = X o h Bool enumeration
+  module B = X o h Bool (inc id≃)
 
   Precategory→2Precategory : Precategory o h → 2Precategory o h
   Precategory→2Precategory C = C' where
@@ -245,7 +245,7 @@ module _ {o h : Level} where
     C .assoc = {!   !}
 
   Precategory→2Precategory-is-iso : is-iso Precategory→2Precategory
-  Precategory→2Precategory-is-iso .is-iso.inv = 2Precategory→Precategory
+  Precategory→2Precategory-is-iso .is-iso.from = 2Precategory→Precategory
   Precategory→2Precategory-is-iso .is-iso.rinv C' = XPrecategory-path _ _ _ _
     refl
     (ext λ b → ap C'.Hom (Bool-η b))

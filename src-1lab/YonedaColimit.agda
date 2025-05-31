@@ -6,7 +6,8 @@ open import Cat.Diagram.Colimit.Base
 open import Cat.Diagram.Limit.Base
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Initial
-open import Cat.CartesianClosed.Instances.PSh
+open import Cat.Instances.Presheaf.Limits
+open import Cat.Instances.Presheaf.Exponentials
 
 import Cat.Reasoning
 
@@ -18,7 +19,7 @@ module YonedaColimit {o ℓ} (C : Precategory o ℓ) where
 open Cat.Reasoning C
 
 Δ1 : Terminal (PSh ℓ C)
-Δ1 = PSh-terminal {C = C}
+Δ1 = PSh-terminal _ C
 
 open Terminal Δ1
 

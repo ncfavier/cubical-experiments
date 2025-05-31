@@ -39,9 +39,9 @@ module _
   to-is-precat-iso : is-precat-iso to
   to-is-precat-iso .has-is-ff = is-iso→is-equiv is where
     is : ∀ {a b} → is-iso (to .F₁ {a} {b})
-    is .inv f .α = f .α
-    is .inv f .β = f .β
-    is {a} {b} .inv f .sq = Equiv.injective (adjunct-hom-equiv F⊣G) $
+    is .from f .α = f .α
+    is .from f .β = f .β
+    is {a} {b} .from f .sq = Equiv.injective (adjunct-hom-equiv F⊣G) $
       L-adjunct F⊣G (b .map D.∘ F .F₁ (f .α)) ≡⟨ L-adjunct-naturall F⊣G _ _ ⟩
       L-adjunct F⊣G (b .map) C.∘ f .α         ≡⟨ f .sq ⟩
       G .F₁ (f .β) C.∘ L-adjunct F⊣G (a .map) ≡˘⟨ L-adjunct-naturalr F⊣G _ _ ⟩
@@ -50,8 +50,8 @@ module _
     is .linv f = trivial!
   to-is-precat-iso .has-is-iso = is-iso→is-equiv is where
     is : is-iso (to .F₀)
-    is .inv o .x = o .x
-    is .inv o .y = o .y
-    is .inv o .map = R-adjunct F⊣G (o .map)
+    is .from o .x = o .x
+    is .from o .y = o .y
+    is .from o .map = R-adjunct F⊣G (o .map)
     is .rinv o = ↓Obj-path _ _ refl refl (L-R-adjunct F⊣G _)
     is .linv o = ↓Obj-path _ _ refl refl (R-L-adjunct F⊣G _)
