@@ -2,7 +2,7 @@ open import 1Lab.Prelude
 
 open import Data.Int renaming (Int to ℤ)
 
-open import Homotopy.Space.Circle hiding (Cover ; decode)
+open import Homotopy.Space.Circle
 
 -- https://math.stackexchange.com/questions/4940313/giving-calculating-explicit-homomorphism-between-fundamental-groups
 module Möbius where

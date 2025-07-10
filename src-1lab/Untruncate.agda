@@ -17,7 +17,7 @@ is-homogeneous X = ∀ x y → point X x ≡ point X y
   → (∀ x → b ≡ f x)
   → ∥ A ∥ → B
 ∥-∥-rec-const {A = A} {B} f b f-const x =
-  ∥-∥-elim {P = λ _ → Singleton b} (λ _ → is-contr→is-prop (contr _ Singleton-is-contr))
+  ∥-∥-elim {P = λ _ → Singleton b} (λ _ → is-contr→is-prop Singleton-is-contr)
     (λ x → f x , f-const x) x .fst
 
 module old {ℓ} (X : Type ℓ) (x : X) (hom : is-homogeneous X) where

@@ -92,8 +92,9 @@ module X (o h : Level) (X : Type) (e : ∥ X ≃ Bool ∥) where
     Discrete-X : Discrete X
     Discrete-X = Finite→Discrete
 
-    H-Level-X : H-Level X 2
-    H-Level-X = Finite→H-Level
+    abstract
+      H-Level-X : H-Level X 2
+      H-Level-X = Finite→H-Level
 
   _[_↦_] : (X → O) → X → O → X → O
   _[_↦_] b x m i = ifᵈ i ≡? x then m else b i
@@ -294,6 +295,6 @@ module _ {o h : Level} where
     refl
     (ext λ b → ap₂ C.Hom (transport-refl _) (transport-refl _))
     Regularity.reduce!
-    (to-pathp (ext λ b m f → Regularity.reduce!))
+    (to-pathp (ext λ b m f → {! Regularity.reduce! !})) -- this takes too long
     where module C = Precategory C
 ```

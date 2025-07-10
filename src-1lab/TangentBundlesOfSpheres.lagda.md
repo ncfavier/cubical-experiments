@@ -14,6 +14,7 @@ open import Data.Sum
 
 open import Homotopy.Space.Suspension.Properties
 open import Homotopy.Connectedness.Automation
+open import Homotopy.Space.Sphere.Properties
 open import Homotopy.Space.Suspension
 open import Homotopy.Connectedness
 open import Homotopy.Space.Circle
@@ -81,8 +82,8 @@ is-natural f =
 
 instance
   Map-Susp : Map (eff Susp)
-  Map-Susp .Map.map f N = N
-  Map-Susp .Map.map f S = S
+  Map-Susp .Map.map f north = north
+  Map-Susp .Map.map f south = south
   Map-Susp .Map.map f (merid a i) = merid (f a) i
 
   Functorial-Susp : Functorial (eff Susp)
@@ -91,12 +92,12 @@ instance
   Functorial-Susp .Functorial.map-∘ = funext $ Susp-elim _ refl refl λ _ _ → refl
 
 flipΣ : ∀ {ℓ} {A : Type ℓ} → Susp A → Susp A
-flipΣ N = S
-flipΣ S = N
+flipΣ north = south
+flipΣ south = north
 flipΣ (merid a i) = merid a (~ i)
 
 flipΣ∙ : ∀ {n} → Sⁿ (suc n) →∙ Sⁿ (suc n)
-flipΣ∙ = flipΣ , sym (merid N)
+flipΣ∙ = flipΣ , sym (merid north)
 
 flipΣ-involutive : ∀ {ℓ} {A : Type ℓ} → (p : Susp A) → flipΣ (flipΣ p) ≡ p
 flipΣ-involutive = Susp-elim _ refl refl λ _ _ → refl
@@ -125,12 +126,12 @@ twist α i j k = hcomp (∂ i ∨ ∂ j ∨ ∂ k) λ where
 -- Flipping ΣΣA along the first axis is homotopic to flipping along the second axis,
 -- by rotating 180°.
 rotateΣ : ∀ {ℓ} {A : Type ℓ} → map flipΣ ≡ flipΣ {A = Susp A}
-rotateΣ = funext $ Susp-elim _ (merid N) (sym (merid S)) (
+rotateΣ = funext $ Susp-elim _ (merid north) (sym (merid south)) (
   Susp-elim _ (flip₁ (double-connection _ _)) (double-connection _ _)
     λ a i j k → hcomp (∂ j ∨ ∂ k) λ where
       l (l = i0) → merid (merid a j) i
-      l (j = i0) → merid N (I-interp l i k)
-      l (j = i1) → merid S (I-interp l i (~ k))
+      l (j = i0) → merid north (I-interp l i k)
+      l (j = i1) → merid south (I-interp l i (~ k))
       l (k = i0) → twist (λ i j → merid (merid a i) j) (~ i) j (~ l)
       l (k = i1) → twist (λ i j → merid (merid a i) j) j i l)
 
@@ -139,14 +140,14 @@ Susp-ua→
   → {e : A ≃ B} {f : Susp A → C} {g : Susp B → C}
   → (∀ sa → f sa ≡ g (map (e .fst) sa))
   → PathP (λ i → Susp (ua e i) → C) f g
-Susp-ua→ h i N = h N i
-Susp-ua→ h i S = h S i
+Susp-ua→ h i north = h north i
+Susp-ua→ h i south = h south i
 Susp-ua→ {g = g} h i (merid a j) = hcomp (∂ i ∨ ∂ j) λ where
   k (k = i0) → g (merid (unglue a) j)
   k (i = i0) → h (merid a j) (~ k)
   k (i = i1) → g (merid a j)
-  k (j = i0) → h N (i ∨ ~ k)
-  k (j = i1) → h S (i ∨ ~ k)
+  k (j = i0) → h north (i ∨ ~ k)
+  k (j = i1) → h south (i ∨ ~ k)
 
 -- The tangent bundles of spheres
 
@@ -177,12 +178,12 @@ antipodeⁿ⁻¹ : ∀ n → Sⁿ⁻¹ n ≃ Sⁿ⁻¹ n
 antipodeⁿ⁻¹ zero = id≃
 antipodeⁿ⁻¹ (suc n) = map≃ (antipodeⁿ⁻¹ n) ∙e flipΣ≃
 
-θN : ∀ n → (p : Sⁿ⁻¹ n) → θⁿ⁻¹ n p .fst N ≡ p
+θN : ∀ n → (p : Sⁿ⁻¹ n) → θⁿ⁻¹ n p .fst north ≡ p
 θN (suc n) = Susp-elim _ refl refl λ p → transpose $
     ap sym (∙-idl _ ∙ ∙-idl _ ∙ ∙-elimr (∙-idl _ ∙ ∙-idl _ ∙ ∙-idr _ ∙ ∙-idl _ ∙ ∙-idl _ ∙ ∙-idl _))
   ∙ ap merid (θN n p)
 
-θS : ∀ n → (p : Sⁿ⁻¹ n) → θⁿ⁻¹ n p .fst S ≡ Equiv.to (antipodeⁿ⁻¹ n) p
+θS : ∀ n → (p : Sⁿ⁻¹ n) → θⁿ⁻¹ n p .fst south ≡ Equiv.to (antipodeⁿ⁻¹ n) p
 θS (suc n) = Susp-elim _ refl refl λ p → transpose $
     ap sym (∙-idl _ ∙ ∙-idl _ ∙ ∙-elimr (∙-idl _ ∙ ∙-idl _ ∙ ∙-idr _ ∙ ∙-idl _ ∙ ∙-idl _ ∙ ∙-idl _))
   ∙ ap (sym ∘ merid) (θS n p)
@@ -220,8 +221,8 @@ section→homotopy n sec = sym $ funext (λ p → cⁿ⁻¹ n p (sec p)) ∙ ant
 -- homotopy theory in order to define the degrees of (unpointed!) maps of spheres.
 
 degree∙ : ∀ n → (Sⁿ (suc n) →∙ Sⁿ (suc n)) → Int
-degree∙ zero f = ΩS¹≃integers .fst (ap (transport SuspS⁰≡S¹) (Ωⁿ≃Sⁿ-map 1 .fst f))
-degree∙ (suc n) = {! πₙ(Sⁿ) ≃ ℤ !}
+degree∙ zero f = ΩS¹≃Int .fst (ap (SuspS⁰≃S¹ .fst) (Ωⁿ≃Sⁿ-map 1 .fst f))
+degree∙ (suc n) = {! πₙSⁿ≃Int !}
 
 degree∙-map : ∀ n f → degree∙ (suc n) (map (f .fst) , refl) ≡ degree∙ n f
 degree∙-map n f = {! the isomorphisms above should be compatible with suspension !}
@@ -238,14 +239,14 @@ degree∙-flipΣ zero = refl -- neat.
 degree∙-flipΣ (suc n) = ap (degree∙ (suc n)) p ∙∙ degree∙-map n flipΣ∙ ∙∙ degree∙-flipΣ n
   where
     p : flipΣ∙ ≡ (map flipΣ , refl)
-    p = Σ-pathp (sym rotateΣ) (λ i j → merid N (~ i ∧ ~ j))
+    p = Σ-pathp (sym rotateΣ) (λ i j → merid north (~ i ∧ ~ j))
 
 -- In order to define degrees of unpointed maps, we show that the function that
 -- forgets the pointing of a map Sⁿ →∙ Sⁿ is a bijection (up to homotopy).
 -- For n = 1, this is due to the fact that S¹ is the delooping of an abelian
 -- group; for n > 1, we can use the fact that the n-sphere is simply connected.
 Sⁿ-class-injective
-  : ∀ n f → (p q : f N ≡ N)
+  : ∀ n f → (p q : f north ≡ north)
   → ∥ Path (Sⁿ (suc n) →∙ Sⁿ (suc n)) (f , p) (f , q) ∥
 Sⁿ-class-injective zero f p q = inc (S¹-cohomology.injective refl)
   where
@@ -253,10 +254,10 @@ Sⁿ-class-injective zero f p q = inc (S¹-cohomology.injective refl)
     Sⁿ⁼¹-concrete : ConcreteGroup lzero
     Sⁿ⁼¹-concrete .B = Sⁿ 1
     Sⁿ⁼¹-concrete .has-is-connected = is-connected→is-connected∙ (Sⁿ⁻¹-is-connected 2)
-    Sⁿ⁼¹-concrete .has-is-groupoid = subst is-groupoid (sym SuspS⁰≡S¹) S¹-is-groupoid
+    Sⁿ⁼¹-concrete .has-is-groupoid = Equiv→is-hlevel 3 SuspS⁰≃S¹ S¹-is-groupoid
 
     Sⁿ⁼¹≡S¹ : Sⁿ⁼¹-concrete ≡ S¹-concrete
-    Sⁿ⁼¹≡S¹ = ConcreteGroup-path (Σ-path SuspS⁰≡S¹ refl)
+    Sⁿ⁼¹≡S¹ = ConcreteGroup-path (Σ-path (ua SuspS⁰≃S¹) refl)
 
     Sⁿ⁼¹-ab : is-concrete-abelian Sⁿ⁼¹-concrete
     Sⁿ⁼¹-ab = subst is-concrete-abelian (sym Sⁿ⁼¹≡S¹) S¹-concrete-abelian
@@ -289,7 +290,7 @@ Sⁿ-pointed≃unpointed n .snd = injective-surjective→is-equiv! (inj _ _) sur
 
     surj : is-surjective (Sⁿ-class n)
     surj = ∥-∥₀-elim (λ _ → hlevel 2) λ f → do
-      pointed ← connected (f N) N
+      pointed ← connected (f north) north
       pure (inc (f , pointed) , refl)
 
 degree : ∀ n → (⌞ Sⁿ (suc n) ⌟ → ⌞ Sⁿ (suc n) ⌟) → Int
@@ -303,7 +304,7 @@ degree∙≡degree n f∙ = ap (∥-∥₀-rec _ _)
   where module U = Equiv (Sⁿ-pointed≃unpointed n)
 
 flip≠id : ∀ n → ¬ flipΣ ≡ id {A = Sⁿ⁻¹ (suc n)}
-flip≠id zero h = subst (Susp-elim _ ⊤ ⊥ (λ ())) (h $ₚ S) _
+flip≠id zero h = subst (Susp-elim _ ⊤ ⊥ (λ ())) (h $ₚ south) _
 flip≠id (suc n) h = negsuc≠pos $
   -1               ≡˘⟨ degree∙-flipΣ n ⟩
   degree∙ n flipΣ∙ ≡˘⟨ degree∙≡degree n _ ⟩

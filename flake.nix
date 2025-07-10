@@ -28,7 +28,6 @@
     ];
     agda = pkgs.agda.withPackages agdaLibs;
     AGDA_LIBRARIES_FILE = pkgs.agdaPackages.mkLibraryFile agdaLibs;
-    Agda_datadir = "${pkgs.haskellPackages.Agda.data}/share/agda";
 
     shakefile = pkgs.haskellPackages.callCabal2nix "cubical-experiments-shake" ./shake {};
   in {
@@ -39,7 +38,7 @@
 
       shakefile = pkgs.haskellPackages.shellFor {
         packages = _: [ shakefile ];
-        inherit AGDA_LIBRARIES_FILE Agda_datadir;
+        inherit AGDA_LIBRARIES_FILE;
       };
     };
 
@@ -48,7 +47,7 @@
         name = "cubical-experiments";
         src = self;
         nativeBuildInputs = [ shakefile ];
-        inherit AGDA_LIBRARIES_FILE Agda_datadir;
+        inherit AGDA_LIBRARIES_FILE;
         LC_ALL = "C.UTF-8";
         buildPhase = ''
           cubical-experiments-shake

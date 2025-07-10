@@ -73,7 +73,7 @@ S≡C' : is-precat-iso S→C'
 S≡C' .has-is-ff = id-equiv
 S≡C' .has-is-iso = inverse-is-equiv (e .snd) where
   e : (Σ[ X ∈ Set lzero ] Σ[ n ∈ Nat ] Fin→Sets .F₀ n Sets.≅ X) ≃ Nat
-  e = Σ-swap₂ ∙e Σ-contract λ n → is-contr-ΣR Sets-is-category
+  e = Σ-swap₂ ∙e Σ-contr-snd λ n → is-contr-ΣR Sets-is-category
 
 {-
 Since C is a Rezk completion of S, we should expect to have a fully

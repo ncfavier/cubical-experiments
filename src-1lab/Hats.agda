@@ -125,7 +125,7 @@ module _ (n-1 : Nat) where
                 → is-equiv (λ x → mul (xs [ i ≔ x ]))
       mul-equiv i xs with fin-view i
       mul-equiv _ xs | zero = ⋆-equivr _
-      mul-equiv {suc m} _ xs | suc i = ∘-is-equiv (mul-equiv i (xs ∘ fsuc)) (⋆-equivl _)
+      mul-equiv {suc m} _ xs | suc i = ∘-is-equiv (⋆-equivl _) (mul-equiv i (xs ∘ fsuc))
 
   group→strategy : Group-on (Fin n) → Strategy
   group→strategy = latin→strategy ∘ group→latin

@@ -227,7 +227,7 @@ module Modality
 
   Σ-connected : {B : A → Type ℓ} → connected A → (∀ a → connected (B a)) → connected (Σ A B)
   Σ-connected A-conn B-conn = Equiv→is-hlevel 0 (○Σ○≃○Σ e⁻¹)
-    (connected-≃ (Σ-contract B-conn) A-conn)
+    (connected-≃ (Σ-contr-snd B-conn) A-conn)
 
   -- Additional properties of *lex* modalities
 
