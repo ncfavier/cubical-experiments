@@ -20,10 +20,10 @@ left≠right p = subst (λ { left → ⊤; right → ⊥ }) p tt
 
 instance
   Discrete-Side : Discrete Side
-  Discrete-Side {left} {left} = yes refl
-  Discrete-Side {left} {right} = no left≠right
-  Discrete-Side {right} {left} = no (left≠right ∘ sym)
-  Discrete-Side {right} {right} = yes refl
+  Discrete-Side .decide left left = yes refl
+  Discrete-Side .decide left right = no left≠right
+  Discrete-Side .decide right left = no (left≠right ∘ sym)
+  Discrete-Side .decide right right = yes refl
 
 cross : Side → Side
 cross left = right

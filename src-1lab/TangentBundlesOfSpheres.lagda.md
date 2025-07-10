@@ -220,7 +220,7 @@ section→homotopy n sec = sym $ funext (λ p → cⁿ⁻¹ n p (sec p)) ∙ ant
 -- homotopy theory in order to define the degrees of (unpointed!) maps of spheres.
 
 degree∙ : ∀ n → (Sⁿ (suc n) →∙ Sⁿ (suc n)) → Int
-degree∙ zero f = ΩS¹≃integers .fst (ap (transport SuspS⁰≡S¹) (Ωⁿ≃Sⁿ-map 1 .fst f))
+degree∙ zero f = ΩS¹≃Int .fst (ap (transport SuspS⁰≡S¹) (Ωⁿ≃Sⁿ-map 1 .fst f))
 degree∙ (suc n) = {! πₙ(Sⁿ) ≃ ℤ !}
 
 degree∙-map : ∀ n f → degree∙ (suc n) (map (f .fst) , refl) ≡ degree∙ n f
