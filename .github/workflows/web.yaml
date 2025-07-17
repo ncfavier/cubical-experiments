@@ -9,8 +9,8 @@ jobs:
         with:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-            extra-substituters = https://nix.monade.li
-            extra-trusted-public-keys = nix.monade.li:2Zgy59ai/edDBizXByHMqiGgaHlE04G6Nzuhx1RPFgo=
+            extra-substituters = https://nix.monade.li https://1lab.cachix.org
+            extra-trusted-public-keys = nix.monade.li:2Zgy59ai/edDBizXByHMqiGgaHlE04G6Nzuhx1RPFgo= 1lab.cachix.org-1:eYjd9F9RfibulS4OSFBYeaTMxWojPYLyMqgJHDvG1fs=
       - uses: cachix/cachix-action@v15
         with:
           name: ncfavier
