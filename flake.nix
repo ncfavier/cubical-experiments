@@ -1,6 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:ncfavier/nixpkgs/agda-bump";
+    nixpkgs.url = "nixpkgs/haskell-updates";
+    agda.url = "github:agda/agda";
     the1lab = {
       url = "github:the1lab/1lab";
       flake = false;
@@ -11,14 +12,17 @@
     system = "x86_64-linux";
     pkgs = import nixpkgs {
       inherit system;
-      overlays = [ (self: super: {
-        agdaPackages = super.agdaPackages.overrideScope (aself: asuper: {
-          _1lab = asuper._1lab.overrideAttrs {
-            version = "unstable-${inputs.the1lab.shortRev}";
-            src = inputs.the1lab;
-          };
-        });
-      }) ];
+      overlays = [
+        inputs.agda.overlays.default
+        (self: super: {
+          agdaPackages = super.agdaPackages.overrideScope (aself: asuper: {
+            _1lab = asuper._1lab.overrideAttrs {
+              version = "unstable-${inputs.the1lab.shortRev}";
+              src = inputs.the1lab;
+            };
+          });
+        })
+      ];
     };
 
     agdaLibs = libs: [
