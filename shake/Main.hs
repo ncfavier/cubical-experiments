@@ -22,6 +22,7 @@ import HTML.Base
 
 import Text.HTML.TagSoup
 import Text.Pandoc
+import Text.Pandoc.Filter
 import Text.Pandoc.Walk
 
 newtype CompileDirectory = CompileDirectory (FilePath, FilePath)
@@ -110,6 +111,7 @@ main = shakeArgs shakeOptions do
               readerExtensions = foldr enableExtension pandocExtensions [Ext_autolink_bare_uris]
             } markdown
             pandoc <- pure $ walk patchBlock pandoc
+            pandoc <- applyJSONFilter def [] "pandoc-katex" pandoc
             writeHtml5String def pandoc
         ".agda" -> do
           html <- readFileText (htmlDir </> htmlFile)
