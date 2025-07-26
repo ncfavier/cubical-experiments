@@ -1,7 +1,7 @@
 import Agda.Compiler.Backend hiding (getEnv)
 import Agda.Interaction.Imports
 import Agda.Interaction.Library.Base
-import Agda.Interaction.Options
+import Agda.Interaction.Options (CommandLineOptions(..), defaultOptions)
 import Agda.TypeChecking.Errors
 import Agda.Utils.FileName
 import Agda.Utils.Monad
@@ -20,6 +20,8 @@ import Development.Shake.FilePath
 import HTML.Backend
 import HTML.Base
 
+import System.Console.GetOpt
+
 import Text.HTML.TagSoup
 import Text.Pandoc
 import Text.Pandoc.Filter
@@ -28,6 +30,10 @@ import Text.Pandoc.Walk
 newtype CompileDirectory = CompileDirectory (FilePath, FilePath)
   deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
 type instance RuleResult CompileDirectory = ()
+
+newtype RenderModule = RenderModule (FilePath, FilePath)
+  deriving (Show, Typeable, Eq, Hashable, Binary, NFData)
+type instance RuleResult RenderModule = T.Text
 
 sourceDir, source1labDir, buildDir, htmlDir, siteDir, everything, everything1lab :: FilePath
 sourceDir = "src"
@@ -76,17 +82,66 @@ patchBlock (Header i a@(ident, _, _) inl) | ident /= "" = Header i a $
   inl ++ [Link ("", ["anchor"], [("aria-hidden", "true")]) [] ("#" <> ident, "")]
 patchBlock b = b
 
+shakeOpts :: ShakeOptions
+shakeOpts = shakeOptions {
+  shakeColor = True
+}
+
+data Flags = SkipAgda deriving Eq
+
+optDescrs :: [OptDescr (Either String Flags)]
+optDescrs =
+  [ Option [] ["skip-agda"] (NoArg (Right SkipAgda)) "Skip typechecking Agda."
+  ]
+
+data SourceType = HTML FilePath | Markdown FilePath
+
+-- Takes a base source directory and a source filename and returns the
+-- corresponding Markdown source and the path to the output file generated
+-- by Agda.
+getSourceFile :: FilePath -> FilePath -> Action (T.Text, SourceType)
+getSourceFile sourceDir sourceFile = do
+  source <- readFileText (sourceDir </> sourceFile)
+  case takeExtensions sourceFile of
+    ".agda" -> pure (T.unlines ["```agda", source, "```"], HTML $ htmlDir </> dropExtensions sourceFile <.> "html")
+    ".lagda.md" -> pure (source, Markdown $ htmlDir </> dropExtensions sourceFile <.> takeExtension sourceFile)
+    _ -> fail ("unsupported extension for file " <> sourceFile)
+
 main :: IO ()
-main = shakeArgs shakeOptions do
-  -- I realise this is not how a Shakefile should be structured, but I got
-  -- bored trying to figure it out and this is good enough for now.
-  -- I should probably look into Development.Shake.Forward ...
-  compileModule <- addOracle \ (CompileDirectory (sourceDir, everything)) -> do
+main = shakeArgsWith shakeOpts optDescrs \ flags _ -> pure $ Just do
+  let skipAgda = SkipAgda `elem` flags
+
+  -- Render a single type-checked module to HTML.
+  renderModule <- (. RenderModule) <$> addOracle \ (RenderModule (sourceDir, sourceFile)) -> do
+    let
+      renderMarkdown markdown = do
+        traced ("pandoc: " <> sourceFile) $ runIOorExplode do
+          pandoc <- readMarkdown def {
+            readerExtensions = foldr enableExtension pandocExtensions [Ext_autolink_bare_uris]
+          } markdown
+          pandoc <- pure $ walk patchBlock pandoc
+          pandoc <- applyJSONFilter def [] "pandoc-katex" pandoc
+          writeHtml5String def pandoc
+    (markdown, agdaOutputFile) <- getSourceFile sourceDir sourceFile
+    if skipAgda then renderMarkdown markdown
+    else do
+      case agdaOutputFile of
+        HTML file -> do
+          html <- readFileText file
+          pure $ "<pre class=\"Agda\">" <> html <> "</pre>"
+        Markdown file -> do
+          markdown <- readFileText file
+          renderMarkdown markdown
+
+  -- Invoke Agda on a source directory and render all the modules in it.
+  compileDirectory <- (. CompileDirectory) <$> addOracle \ (CompileDirectory (sourceDir, everything)) -> do
     librariesFile <- getEnv "AGDA_LIBRARIES_FILE"
     sourceFiles <- filter (not . ("Everything*" ?==)) <$>
       getDirectoryFiles sourceDir ["//*.agda", "//*.lagda.md"]
+    -- Write Everything.agda
     writeFile' everything (makeEverythingFile sourceFiles)
-    traced "agda" do
+    -- Run Agda on Everything.agda
+    unless skipAgda $ traced "agda" do
       root <- absolute sourceDir
       runTCMTopPrettyErrors do
         setCommandLineOptions' root defaultOptions
@@ -98,49 +153,51 @@ main = shakeArgs shakeOptions do
         source <- parseSource sourceFile
         checkResult <- typeCheckMain TypeCheck source
         callBackend "HTML" IsMain checkResult
+    -- Render modules as needed and insert the results into the module template.
     moduleTemplate <- readFileText "module.html"
     for_ sourceFiles \ sourceFile -> do
-      let
-        htmlFile = dropExtensions sourceFile <.> "html"
-        literateFile = dropExtensions sourceFile <.> takeExtension sourceFile -- .lagda.md → .md
-      contents <- case takeExtensions sourceFile of
-        ".lagda.md" -> do
-          markdown <- readFileText (htmlDir </> literateFile)
-          traced "pandoc" $ runIOorExplode do
-            pandoc <- readMarkdown def {
-              readerExtensions = foldr enableExtension pandocExtensions [Ext_autolink_bare_uris]
-            } markdown
-            pandoc <- pure $ walk patchBlock pandoc
-            pandoc <- applyJSONFilter def [] "pandoc-katex" pandoc
-            writeHtml5String def pandoc
-        ".agda" -> do
-          html <- readFileText (htmlDir </> htmlFile)
-          pure $ "<pre class=\"Agda\">" <> html <> "</pre>"
-        _ -> fail ("unknown extension for file " <> sourceFile)
+      let htmlFile = dropExtensions sourceFile <.> "html"
+      html <- renderModule (sourceDir, sourceFile)
       writeFile' (siteDir </> htmlFile)
         $ T.unpack
-        $ T.replace "@contents@" contents
+        $ T.replace "@contents@" html
         $ T.replace "@moduleName@" (T.pack $ filenameToModule sourceFile)
         $ T.replace "@path@" (T.pack $ sourceDir </> sourceFile)
         $ moduleTemplate
 
+  -- Compile all modules.
+  "modules" ~> do
+    compileDirectory (sourceDir, everything)
+    compileDirectory (source1labDir, everything1lab)
+
+  -- Generate the index.
   siteDir </> "index.html" %> \ index -> do
-    compileModule (CompileDirectory (sourceDir, everything))
-    compileModule (CompileDirectory (source1labDir, everything1lab))
+    need ["modules"]
     indexTemplate <- readFileText "index.html"
-    everythingAgda <- (<>)
-      <$> readFileLines (htmlDir </> "Everything.html")
-      <*> readFileLines (htmlDir </> "Everything-1lab.html")
+    everythingAgda <-
+      if skipAgda then pure []
+      else (<>)
+        <$> readFileLines (htmlDir </> "Everything.html")
+        <*> readFileLines (htmlDir </> "Everything-1lab.html")
     writeFile' index
       $ T.unpack
       $ T.replace "@contents@" (T.pack $ unlines $ sortOn importToModule $ everythingAgda)
       $ indexTemplate
-    copyFile' "style.css" (siteDir </> "style.css")
-    copyFile' "main.js" (siteDir </> "main.js")
-    copyFile' (htmlDir </> "highlight-hover.js") (siteDir </> "highlight-hover.js")
+    unless skipAgda do
+      copyFile' (htmlDir </> "highlight-hover.js") (siteDir </> "highlight-hover.js")
 
-  phony "all" do
-    need [siteDir </> "index.html"]
+  siteDir </> "style.css" %> \ out -> do
+    copyFileChanged "style.css" out
+
+  siteDir </> "main.js" %> \ out -> do
+    copyFileChanged "main.js" out
+
+  "all" ~> do
+    need
+      [ siteDir </> "index.html"
+      , siteDir </> "style.css"
+      , siteDir </> "main.js"
+      ]
 
   want ["all"]
 
