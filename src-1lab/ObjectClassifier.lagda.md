@@ -1,3 +1,9 @@
+<details>
+<summary>
+An improved version of this note is at [`ObjectClassifiers`](/ObjectClassifiers).
+</summary>
+
+```agda
 open import 1Lab.Type
 open import 1Lab.Type.Sigma
 open import 1Lab.Type.Pointed
@@ -94,3 +100,5 @@ lemma {ℓ} A = Iso→Equiv λ where
 -- Equivalences form an identity system, which is another way to state univalence.
 univalence : ∀ {ℓ} (A : Type ℓ) → is-contr (Σ (Type ℓ) λ B → A ≃ B)
 univalence {ℓ} A = Equiv→is-hlevel 0 (lemma A e⁻¹) (Type↓-is-classifier (! A))
+```
+</details>
