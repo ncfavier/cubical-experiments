@@ -6,16 +6,32 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1753474939,
-        "narHash": "sha256-0psBbO0SAl9oijDlVBKhduC8EnoxOVgfYZ1egK5C1gk=",
+        "lastModified": 1753632366,
+        "narHash": "sha256-ZaKKtaB+8Wo+3r9wUj7nyA58a4tLM5we/v22Z9bV63g=",
         "owner": "agda",
         "repo": "agda",
-        "rev": "4c730a27dc3b9947245e75bcc50d7554f44f38cf",
+        "rev": "e717572aa1dcc976b3a4b5b977fcfaf5a60fe3e2",
         "type": "github"
       },
       "original": {
         "owner": "agda",
         "repo": "agda",
+        "type": "github"
+      }
+    },
+    "agda-stdlib": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1753005360,
+        "narHash": "sha256-9m62MQHEOVxv61Nv9JlFnksn2lPq6QTuLZ0saPTOIJQ=",
+        "owner": "agda",
+        "repo": "agda-stdlib",
+        "rev": "0e97e2ed1f999ea0d2cce2a3b2395d5a9a7bd36a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "agda",
+        "repo": "agda-stdlib",
         "type": "github"
       }
     },
@@ -73,22 +89,23 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1753489316,
-        "narHash": "sha256-nlnPqKhWGbqOjcLDJvRgtLZYvCM3D7Dwk6CkPvM/6MY=",
+        "lastModified": 1753432016,
+        "narHash": "sha256-cnL5WWn/xkZoyH/03NNUS7QgW5vI7D1i74g48qplCvg=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "1c3ce1e240626bf84775aa62fa8eaf5e75e0997b",
+        "rev": "6027c30c8e9810896b92429f0092f624f7b1aace",
         "type": "github"
       },
       "original": {
         "id": "nixpkgs",
-        "ref": "haskell-updates",
+        "ref": "nixpkgs-unstable",
         "type": "indirect"
       }
     },
     "root": {
       "inputs": {
         "agda": "agda",
+        "agda-stdlib": "agda-stdlib",
         "nixpkgs": "nixpkgs_2",
         "the1lab": "the1lab"
       }
@@ -96,11 +113,11 @@
     "the1lab": {
       "flake": false,
       "locked": {
-        "lastModified": 1753514987,
-        "narHash": "sha256-7c3ejM7iePpEyRDFQunCZdXzhSGfsH5/U0N+o2ZV0u0=",
+        "lastModified": 1753635927,
+        "narHash": "sha256-aI7h4a/lLAeT+fTNTYUzfolM1fIYAV+ZBWl5xtAXPkM=",
         "owner": "the1lab",
         "repo": "1lab",
-        "rev": "10ffb6b9c05865ecdafe89940279d55dd6a05120",
+        "rev": "6bedfd53d14b63bb5c8b75a26d6aa1c3358c01bb",
         "type": "github"
       },
       "original": {

@@ -47,6 +47,10 @@ pre, code {
   font-family: JuliaMono, monospace;
 }
 
+.diagram-container {
+  text-align: center;
+}
+
 details {
   border-inline-start: 4px solid var(--accent);
   padding-inline-start: 8px;
