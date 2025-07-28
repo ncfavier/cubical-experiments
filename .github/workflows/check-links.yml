@@ -15,4 +15,4 @@ jobs:
       - name: Link Checker
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --insecure --verbose --no-progress './**/*.md' './**/*.html' './**/*.rst'
+          args: --insecure --verbose --no-progress 'src/**/*.md' 'src/**/*.html' 'src-1lab/**/*.md' 'src-1lab/**/*.html' 'index.html'
