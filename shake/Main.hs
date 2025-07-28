@@ -127,7 +127,7 @@ main = shakeArgsWith shakeOpts optDescrs \ flags _ -> pure $ Just do
   renderDiagram <- (. RenderDiagram) <$> addOracle \ (RenderDiagram contents) -> do
     let
       digest = take 12 . showDigest . sha1 . LBS.fromStrict $ T.encodeUtf8 contents
-      diagramName = digest <.> "light.svg"
+      diagramName = digest <.> "svg"
       output = siteDir </> diagramName
       texPath = diagramsDir </> digest <.> "tex"
     template <- readFileText "diagram.tex"

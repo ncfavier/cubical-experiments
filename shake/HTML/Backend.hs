@@ -148,7 +148,7 @@ htmlHighlightFlag opt    o = do
   return $ o { htmlFlagHighlight = flag }
 
 runLogHtmlWithMonadDebug :: MonadDebug m => LogHtmlT m a -> m a
-runLogHtmlWithMonadDebug = runLogHtmlWith $ reportS "html" 1
+runLogHtmlWithMonadDebug = runLogHtmlWith $ reportS "html" 2 -- be less noisy by default
 
 preCompileHtml
   :: HtmlFlags

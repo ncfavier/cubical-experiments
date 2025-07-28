@@ -18,6 +18,14 @@
       inherit system;
       overlays = [
         inputs.agda.overlays.default
+        (final: prev: {
+          haskell = prev.haskell // {
+            packageOverrides = final.lib.composeExtensions prev.haskell.packageOverrides
+              (hfinal: hprev: {
+                Agda = final.haskell.lib.enableCabalFlag hprev.Agda "debug";
+              });
+          };
+        })
         (self: super: {
           agdaPackages = super.agdaPackages.overrideScope (aself: asuper: {
             standard-library = asuper.standard-library.overrideAttrs {
