@@ -247,7 +247,7 @@ between $\mathsf{Bun}(B)$ and $\mathsf{Fam}(B)$.
 In more detail, the statement that $\pi_\downarrow$ is an equivalence says that
 every bundle $A \to B$ is classified by a unique^[That is, a contractible space of.] pullback square into
 $\mathcal{U}^\mathsf{p}$; this looks a lot like the definition of an
-[object classifier](https://ncatlab.org/nlab/show/(sub)object+classifier+in+an+(infinity%252C1)-topos) in higher topos theory!
+[object classifier](https://ncatlab.org/nlab/show/%28sub%29object+classifier+in+an+%28infinity%2C1%29-topos) in higher topos theory!
 On the other hand, the statement that $\pi_\to$ is an equivalence says that
 every map $B \to \mathcal{U}$ has a unique pullback along $\mathcal{U}^\mathsf{p}$;
 in other words, that this pullback is determined uniquely up to *identity*
