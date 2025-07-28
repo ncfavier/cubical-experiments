@@ -49,6 +49,23 @@
     agda = pkgs.agda.withPackages agdaLibs;
     AGDA_LIBRARIES_FILE = pkgs.agdaPackages.mkLibraryFile agdaLibs;
 
+    texlive = pkgs.texlive.combine {
+      inherit (pkgs.texlive)
+        collection-basic
+        collection-latex
+        xcolor
+        preview
+        pgf tikz-cd pgfplots
+        mathpazo
+        varwidth xkeyval standalone;
+    };
+
+    deps = [
+      pkgs.pandoc-katex
+      texlive
+      pkgs.poppler-utils
+    ];
+
     PANDOC_KATEX_CONFIG_FILE = pkgs.writeText "katex-config.toml" ''
       trust = true
       throw_on_error = true
@@ -68,9 +85,8 @@
 
       shakefile = pkgs.haskellPackages.shellFor {
         packages = _: [ shakefile ];
-        nativeBuildInputs = [
+        nativeBuildInputs = deps ++ [
           pkgs.haskell-language-server
-          pkgs.pandoc-katex
         ];
         inherit AGDA_LIBRARIES_FILE PANDOC_KATEX_CONFIG_FILE;
       };
@@ -80,7 +96,7 @@
       default = pkgs.stdenv.mkDerivation {
         name = "cubical-experiments";
         src = self;
-        nativeBuildInputs = [ shakefile pkgs.pandoc-katex ];
+        nativeBuildInputs = deps ++ [ shakefile ];
         inherit AGDA_LIBRARIES_FILE PANDOC_KATEX_CONFIG_FILE;
         LC_ALL = "C.UTF-8";
         buildPhase = ''
