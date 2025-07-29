@@ -42,7 +42,7 @@ record ⊤ {u} : Type u where
 ```
 </details>
 
-It is folklore knowledge that univalent universes in type theory correspond to
+It is well-known that univalent universes in type theory correspond to
 object classifiers in higher topos theory. However, there are a few different ways
 to make sense of this internally to type theory itself.
 
