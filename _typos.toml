@@ -1,0 +1,15 @@
+[files]
+extend-exclude = ["shake", "*.css", "*.bibtex"]
+
+[default.extend-words]
+identicals = "identicals"
+intensional = "intensional"
+operad = "operad"
+projectives = "projectives"
+raison = "raison"
+substituters = "substituters"
+
+# parts of identifiers
+hom = "hom"
+mor = "mor"
+tne = "tne"

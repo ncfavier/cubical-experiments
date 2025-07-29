@@ -157,7 +157,7 @@ To define the type $\mathsf{Cls}(B)$ of classifications, we take a shortcut: ins
 universal property, we only record the top-left corner $A$ and the bottom map $a$,
 and ask for an equivalence between $A$ and a given pullback of $\mathcal{U}^\mathsf{p}$
 along $a$. This fully determines the projection maps out of $A$,
-so we are justified in leaving them out by function extensionality and constractibility of singletons.
+so we are justified in leaving them out by function extensionality and contractibility of singletons.
 Note that we *cannot* similarly contract $A$ away as that would implicitly assume univalence.
 
 ```agda
