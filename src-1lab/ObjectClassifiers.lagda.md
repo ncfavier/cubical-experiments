@@ -125,7 +125,7 @@ formalised in the 1Lab:
 A partial converse to this result was formalised independently by
 Martín Escardó (in [TypeTopology](https://martinescardo.github.io/TypeTopology/UF.Classifiers.html)) and by Amélia Liao (in [this math.SE answer](https://math.stackexchange.com/a/4364416)): both of them show that univalence follows from $\chi_B$ being a fibrewise equivalence
 **if one also assumes $(-2)$-univalence**, i.e. that any two contractible
-types are equal^[This is implied by *propositional extensionality*, or $(-1)$-univalence.] (as well as function extensionality).
+types are equal^[This is implied by propositional extensionality, i.e. $(-1)$-univalence.] (as well as function extensionality).
 In [this Mastodon post](https://types.pl/@ncf/114737741485982172) I gave
 an example of a Tarski universe containing two distinct unit types and which
 can be closed under $\Sigma$- and identity types in such a way that $\chi_B$ and
@@ -150,7 +150,7 @@ bottom-left corner $B$ and right-hand side map $\mathcal{U}^\mathsf{p}$:
 \end{tikzcd}\]
 ~~~
 
-We call such a pullback square a *classification* over $B$: it consists of
+Let us call such a pullback square a *classification* over $B$: it consists of
 a fibration over $B$ that is classified by a given map $a : B \to \mathcal{U}$.
 
 To define the type $\mathsf{Cls}(B)$ of classifications, we take a shortcut: instead of recording three maps and a
@@ -158,7 +158,7 @@ universal property, we only record the top-left corner $A$ and the bottom map $a
 and ask for an equivalence between $A$ and a given pullback of $\mathcal{U}^\mathsf{p}$
 along $a$. This fully determines the projection maps out of $A$,
 so we are justified in leaving them out by function extensionality and constractibility of singletons.
-Note that we *cannot* similarly contract $A$ away as that would be implicitly assuming univalence.
+Note that we *cannot* similarly contract $A$ away as that would implicitly assume univalence.
 
 ```agda
     record Cls : U⁺ where
@@ -201,6 +201,19 @@ Observe that both $\pi_\downarrow$ and $\pi_\to$ have sections, given by
 taking fibres and total spaces respectively, and that composing one
 section with the other projection recovers the maps $\chi_B$ and $\phi_B$.
 
+~~~{.quiver}
+% https://q.uiver.app/#q=WzAsMyxbMCwwLCJcXG1hdGhzZntCdW59KEIpIl0sWzEsMCwiXFxtYXRoc2Z7Q2xzfShCKSJdLFsyLDAsIlxcbWF0aHNme0ZhbX0oQikiXSxbMSwwLCJcXHBpX1xcZG93bmFycm93IiwwLHsib2Zmc2V0IjotMn1dLFsxLDIsIlxccGlfXFxyaWdodGFycm93IiwwLHsib2Zmc2V0IjotMn1dLFswLDEsIlxcc2lnbWFfXFxkb3duYXJyb3ciLDAseyJvZmZzZXQiOi0yfV0sWzIsMSwiXFxzaWdtYV9cXHRvIiwwLHsib2Zmc2V0IjotMn1dLFswLDIsIlxcY2hpX0IiLDAseyJjdXJ2ZSI6LTN9XSxbMiwwLCJcXHBoaV9CIiwwLHsiY3VydmUiOi0zfV1d
+\[\begin{tikzcd}
+	{\mathsf{Bun}(B)} & {\mathsf{Cls}(B)} & {\mathsf{Fam}(B)}
+	\arrow["{\sigma_\downarrow}", shift left=2, from=1-1, to=1-2]
+	\arrow["{\chi_B}", curve={height=-35pt}, from=1-1, to=1-3]
+	\arrow["{\pi_\downarrow}", shift left=2, from=1-2, to=1-1]
+	\arrow["{\pi_\rightarrow}", shift left=2, from=1-2, to=1-3]
+	\arrow["{\phi_B}", curve={height=-35pt}, from=1-3, to=1-1]
+	\arrow["{\sigma_\to}", shift left=2, from=1-3, to=1-2]
+\end{tikzcd}\]
+~~~
+
 ```agda
     σ↓ : Bun → Cls
     σ↓ (A , p) = λ where
@@ -238,7 +251,7 @@ section with the other projection recovers the maps $\chi_B$ and $\phi_B$.
 
 We now come to the main point of this post: **each of $\pi_\downarrow$ and $\pi_\to$
 is an equivalence if and only if univalence holds**.
-This is reflected in the proof of `Fibration-equiv`{.Agda}, which uses
+This is reflected in the proof of [`Fibration-equiv`{.Agda}](https://1lab.dev/1Lab.Univalence#Fibration-equiv), which uses
 univalence *twice*, once in the left inverse proof and once in the right inverse proof.
 This suggests that the two uses of univalence *cancel each other out* in a certain
 sense, so that we lose information if we only ask for a composite equivalence
@@ -334,8 +347,8 @@ symmetrically for $\pi^\simeq_2$.
     (Fibre-equiv (λ X → Σ U λ Y → X ≃ Y) X e⁻¹)
     (h .is-eqv X)
 
-  π↓-equiv→univalence : is-left-inverse (σ↓ ⊤) (π↓ ⊤) → is-equiv π₁≃
-  π↓-equiv→univalence h =
+  π↓-equiv→univalence : is-left-inverse (σ↓ ⊤) (π↓ ⊤) → univalence
+  π↓-equiv→univalence h = π₁≃-equiv→univalence $
     ∘-is-equiv (Bun⊤≃U .snd)
       (∘-is-equiv π↓-is-equiv
         ((Cls⊤≃Equiv e⁻¹) .snd))
@@ -348,8 +361,8 @@ symmetrically for $\pi^\simeq_2$.
   sym≃ .snd = is-involutive→is-equiv λ (X , Y , e) →
     refl ,ₚ refl ,ₚ ext λ _ → refl
 
-  π→-equiv→univalence : is-left-inverse (σ→ ⊤) (π→ ⊤) → is-equiv π₁≃
-  π→-equiv→univalence h =
+  π→-equiv→univalence : is-left-inverse (σ→ ⊤) (π→ ⊤) → univalence
+  π→-equiv→univalence h = π₁≃-equiv→univalence $
     ∘-is-equiv (Fam⊤≃U .snd)
       (∘-is-equiv π→-is-equiv
         (∘-is-equiv ((Cls⊤≃Equiv e⁻¹) .snd)
