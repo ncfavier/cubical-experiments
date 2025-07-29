@@ -75,7 +75,7 @@
       "\\bZ" = "\\mathbb{Z}"
     '';
 
-    shakefile = pkgs.haskellPackages.callCabal2nix "cubical-experiments-shake" ./shake {};
+    shakefile = pkgs.haskellPackages.callCabal2nix "agda-stuff-shake" ./shake {};
   in {
     devShells.${system} = {
       default = self.packages.${system}.default.overrideAttrs (old: {
@@ -94,13 +94,13 @@
 
     packages.${system} = {
       default = pkgs.stdenv.mkDerivation {
-        name = "cubical-experiments";
+        name = "agda-stuff";
         src = self;
         nativeBuildInputs = deps ++ [ shakefile ];
         inherit AGDA_LIBRARIES_FILE PANDOC_KATEX_CONFIG_FILE;
         LC_ALL = "C.UTF-8";
         buildPhase = ''
-          cubical-experiments-shake
+          agda-stuff-shake
           mv _build/site "$out"
         '';
       };

@@ -64,7 +64,7 @@ myHtmlBackend = Backend htmlBackend'
         , ("standard-library", "https://agda.github.io/agda-stdlib/v" <> v)
         , ("cubical", "https://agda.github.io/cubical")
         , ("1lab", "https://1lab.dev")
-        , ("cubical-experiments", "")
+        , ("agda-stuff", "")
         ]
     }
   }

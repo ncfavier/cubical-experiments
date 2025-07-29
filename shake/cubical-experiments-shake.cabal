@@ -1,5 +1,5 @@
 cabal-version:      3.4
-name:               cubical-experiments-shake
+name:               agda-stuff-shake
 version:            0.1.0.0
 license:            AGPL-3.0-or-later
 author:             Naïm Favier
@@ -7,7 +7,7 @@ maintainer:         n@monade.li
 category:           Development
 build-type:         Simple
 
-executable cubical-experiments-shake
+executable agda-stuff-shake
     ghc-options: -Wall -Wno-name-shadowing
     main-is:          Main.hs
     other-modules: HTML.Base,

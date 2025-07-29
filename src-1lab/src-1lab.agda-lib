@@ -1,4 +1,4 @@
-name: cubical-experiments
+name: agda-stuff
 include: .
 depend:
     1lab
